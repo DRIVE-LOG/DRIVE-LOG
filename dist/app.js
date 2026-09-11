@@ -2,6 +2,7 @@ import { LEVELS } from './lib/parser.js';
 import { filterLogs, sortLogs, nextSort, SORT_COLUMNS, summarize, kstDay } from './lib/query.js';
 import { inspectUpload, identifyRecords, MAX_BYTES } from './lib/upload.js';
 import { createFirebaseService, friendlyError } from './services.js';
+if (new URLSearchParams(location.search).get('embedded') === '1') document.documentElement.classList.add('embedded');
 const $ = id => document.getElementById(id);
 const number = value => value.toLocaleString('ko-KR');
 const timeFormat = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Seoul', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });

@@ -12,7 +12,7 @@ async function checkDirectory(directory) {
     else if (/\.(m?js)$/.test(name)) { const result = spawnSync(process.execPath, ['--check', path.join(root, name)], { encoding: 'utf8' }); if (result.status !== 0) throw new Error(`${name}: ${result.stderr}`); checked++; }
   }
 }
-for (const dir of ['dist', 'functions', 'scripts', 'tests']) await checkDirectory(dir);
+for (const dir of ['dist', 'functions', 'scripts', 'tests', 'infotainment']) await checkDirectory(dir);
 for (const file of ['package.json', 'functions/package.json', 'firebase.json', 'firestore.indexes.json']) JSON.parse(await readFile(path.join(root, file), 'utf8'));
 const html = await readFile(path.join(root, 'dist/index.html'), 'utf8');
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);

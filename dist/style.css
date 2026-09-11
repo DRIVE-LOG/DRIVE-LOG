@@ -20,3 +20,26 @@
 
 /* Leave room for column labels, units, and both sorting arrows. */
 table{min-width:1040px}th:first-child{width:180px}th:nth-child(2){width:128px}th:nth-child(3){width:150px}th:nth-child(5){width:128px}th:nth-child(6){width:112px}
+
+/* The surrounding PJT1 tablet owns the header and HOME footer in SETTING. */
+.embedded .system-header,.embedded .system-footer{display:none}
+.embedded .cockpit{border:0;max-width:none}
+.embedded .workspace{min-height:0;grid-template-columns:156px minmax(0,1fr)}
+.embedded .sidebar{padding:16px 8px}
+.embedded main{padding:18px}
+.embedded .page-heading{margin-bottom:16px}
+.embedded h1{font-size:26px}
+.embedded .stat-card{min-height:100px;padding:12px}
+.embedded .stat-card strong{font-size:28px;margin:8px 0}
+.embedded .stats{margin-bottom:16px;gap:10px}
+.embedded .stat-icon{right:10px;top:10px}
+.embedded .nav-item{padding:10px 8px;gap:6px}
+.embedded dialog{max-height:calc(100dvh - 24px);padding:18px}
+.embedded .detail-dialog[open]{max-height:calc(100dvh - 24px)}
+@media(max-width:850px){.embedded .sidebar{padding:6px 12px}.embedded main{padding:14px}.embedded .stats{grid-template-columns:repeat(4,minmax(0,1fr))}.embedded .stat-card small{font-size:11px}.embedded .stat-icon{display:none}}
+@media(max-width:600px){.embedded .stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.embedded body{min-width:0}.embedded .page-heading{gap:10px}
+
+.embedded .nav-count{display:none}
+@media(min-width:1000px){.embedded .filters{grid-template-columns:minmax(160px,1.4fr) repeat(2,minmax(130px,1fr)) repeat(2,minmax(115px,.9fr))}.embedded .search-field{grid-column:auto}}

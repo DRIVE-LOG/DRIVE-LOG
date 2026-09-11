@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="차량용 인포테인먼트 시스템 UI 프로토타입"
+    />
+    <title>AURELIA DRIVE | 차량용 인포테인먼트</title>
+    <link
+      rel="preload"
+      href="/assets/vehicle-cockpit.png"
+      as="image"
+      fetchpriority="high"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="dashboard-environment">
+      <div class="ambient-glow ambient-glow--left" aria-hidden="true"></div>
+      <div class="ambient-glow ambient-glow--right" aria-hidden="true"></div>
+
+      <div class="device-mount" aria-hidden="true">
+        <span></span>
+      </div>
+
+      <main class="device-shell" aria-label="차량용 인포테인먼트 시스템">
+        <div class="device-camera" aria-hidden="true">
+          <span></span>
+        </div>
+
+        <section class="infotainment-screen">
+          <header class="topbar">
+            <button
+              class="brand-button"
+              type="button"
+              data-view-target="home"
+              aria-label="홈 화면으로 이동"
+            >
+              <span class="brand-mark" aria-hidden="true">A</span>
+              <span class="brand-copy">
+                <strong>AURELIA</strong>
+                <small>DRIVE OS</small>
+              </span>
+            </button>
+
+            <div class="drive-state" aria-label="현재 지역">
+              <span class="drive-location">서울특별시 중구</span>
+            </div>
+
+            <div class="system-status">
+              <div class="header-weather" aria-label="현재 날씨">
+                <span id="header-weather-icon" aria-hidden="true">☀</span>
+                <strong id="header-weather-temperature">24°</strong>
+                <small id="header-weather-description">맑음</small>
+              </div>
+              <span class="connection-status" aria-label="네트워크 연결됨">
+                <i></i><i></i><i></i>
+              </span>
+              <time id="header-clock" datetime="">14:32</time>
+            </div>
+          </header>
+
+          <div class="screen-content">
+            <section
+              id="home-view"
+              class="app-view app-view--active"
+              data-view="home"
+              aria-labelledby="home-title"
+            >
+              <h1 id="home-title" class="sr-only" tabindex="-1">
+                인포테인먼트 홈
+              </h1>
+
+              <aside class="driver-panel">
+                <article class="widget media-widget driver-media">
+                  <div class="album-art">
+                    <img
+                      src="/assets/woodz-oo-li-cover.jpg"
+                      alt="WOODZ OO-LI 앨범 커버"
+                    />
+                  </div>
+                  <div class="media-copy">
+                    <small>NOW PLAYING</small>
+                    <strong>Drowning</strong>
+                    <span>WOODZ · OO-LI</span>
+                  </div>
+                  <button
+                    id="media-toggle"
+                    class="media-toggle"
+                    type="button"
+                    aria-label="음악 재생"
+                    aria-pressed="false"
+                  >
+                    ▶
+                  </button>
+                  <div class="media-progress" aria-hidden="true">
+                    <span></span>
+                  </div>
+                </article>
+
+                <div class="trip-summary">
+                  <div class="section-heading">
+                    <div>
+                      <p class="eyebrow">TODAY'S DRIVE</p>
+                      <h3>오늘의 주행</h3>
+                    </div>
+                    <span class="status-chip">ECO</span>
+                  </div>
+                  <div class="trip-metrics">
+                    <div>
+                      <strong>18.4</strong>
+                      <span>km</span>
+                      <small>주행 거리</small>
+                    </div>
+                    <div>
+                      <strong>42</strong>
+                      <span>min</span>
+                      <small>주행 시간</small>
+                    </div>
+                    <div>
+                      <strong>15.8</strong>
+                      <span>km/L</span>
+                      <small>평균 연비</small>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="quick-actions">
+                  <button
+                    class="quick-action quick-action--navigation"
+                    type="button"
+                    data-view-target="navigation"
+                  >
+                    <span class="action-icon" aria-hidden="true">↗</span>
+                    <span>
+                      <small>ROUTE</small>
+                      <strong>내비게이션</strong>
+                    </span>
+                    <i aria-hidden="true">›</i>
+                  </button>
+                  <button
+                    class="quick-action quick-action--weather"
+                    type="button"
+                    data-view-target="weather"
+                  >
+                    <span class="action-icon" aria-hidden="true">☀</span>
+                    <span>
+                      <small>FORECAST</small>
+                      <strong>날씨</strong>
+                    </span>
+                    <i aria-hidden="true">›</i>
+                  </button>
+                </div>
+              </aside>
+
+              <section
+                class="home-map-panel"
+                aria-label="현재 위치 지도. 마우스 오른쪽 버튼을 누르면 파란 핀과 위치 정보가 표시됩니다."
+              >
+                <div class="map-canvas map-canvas--home">
+                  <div
+                    id="home-kakao-map"
+                    class="api-map-layer"
+                    aria-hidden="true"
+                  ></div>
+                  <div class="map-grid" aria-hidden="true"></div>
+                  <span class="road road--1" aria-hidden="true"></span>
+                  <span class="road road--2" aria-hidden="true"></span>
+                  <span class="road road--3" aria-hidden="true"></span>
+                  <span class="road road--4" aria-hidden="true"></span>
+                  <span class="road road--5" aria-hidden="true"></span>
+                  <span class="road road--6" aria-hidden="true"></span>
+
+                  <span class="map-label map-label--city">서울역</span>
+                  <span class="map-label map-label--park">남산공원</span>
+                  <span class="map-label map-label--river">한강대로</span>
+
+                  <div class="current-location">
+                    <span class="location-pulse"></span>
+                    <span class="location-marker">▲</span>
+                  </div>
+
+                  <div class="map-top-overlay">
+                    <span id="home-map-address" class="map-address">
+                      퇴계로 100 · 서울 중구
+                    </span>
+                  </div>
+
+                  <div class="map-zoom" aria-label="지도 확대 및 축소">
+                    <button type="button" data-map-zoom="in" aria-label="지도 확대">
+                      +
+                    </button>
+                    <button type="button" data-map-zoom="out" aria-label="지도 축소">
+                      −
+                    </button>
+                  </div>
+
+                </div>
+                <p
+                  id="home-map-selection-status"
+                  class="sr-only"
+                  role="status"
+                  aria-live="polite"
+                ></p>
+              </section>
+
+              <aside class="side-widgets">
+                <article class="widget weather-widget">
+                  <div class="widget-heading">
+                    <span>
+                      <small>WEATHER</small>
+                      <strong id="home-weather-city">서울</strong>
+                    </span>
+                    <span
+                      id="home-weather-icon"
+                      class="weather-symbol"
+                      aria-hidden="true"
+                    >
+                      ☀
+                    </span>
+                  </div>
+                  <div class="temperature-row">
+                    <strong id="home-weather-temperature">24°</strong>
+                    <span>
+                      <b id="home-weather-description">맑음</b>
+                      <small id="home-weather-feels-like">체감 25°</small>
+                    </span>
+                  </div>
+                  <div
+                    id="home-mini-forecast"
+                    class="mini-forecast"
+                    aria-label="간단 날씨 예보"
+                  >
+                    <span><small>16시</small><b>24°</b></span>
+                    <span><small>17시</small><b>23°</b></span>
+                    <span><small>18시</small><b>22°</b></span>
+                  </div>
+                </article>
+              </aside>
+            </section>
+
+            <section
+              id="navigation-view"
+              class="app-view"
+              data-view="navigation"
+              aria-labelledby="navigation-title"
+              hidden
+            >
+              <aside class="navigation-sidebar">
+                <div class="view-heading">
+                  <p class="eyebrow">NAVIGATION</p>
+                  <h2 id="navigation-title" tabindex="-1">어디로 갈까요?</h2>
+                  <p>장소를 검색하고 가장 편안한 경로를 확인하세요.</p>
+                </div>
+
+                <form id="place-search-form" class="search-form" role="search">
+                  <label class="search-box" for="place-search">
+                    <span aria-hidden="true">⌕</span>
+                    <input
+                      id="place-search"
+                      name="place"
+                      type="search"
+                      placeholder="장소 또는 주소 검색"
+                      autocomplete="off"
+                      role="combobox"
+                      aria-label="장소 또는 주소 검색"
+                      aria-controls="autocomplete-list"
+                      aria-expanded="false"
+                      aria-autocomplete="list"
+                      aria-haspopup="listbox"
+                    />
+                    <kbd>ENTER</kbd>
+                  </label>
+                  <ul
+                    id="autocomplete-list"
+                    class="autocomplete-list"
+                    role="listbox"
+                    hidden
+                  ></ul>
+                </form>
+
+                <div class="search-section-heading">
+                  <h3 id="search-list-title">최근 검색</h3>
+                  <button id="clear-history" type="button">전체 삭제</button>
+                </div>
+
+                <div
+                  id="search-result-list"
+                  class="search-results"
+                  aria-labelledby="search-list-title"
+                >
+                  <button
+                    class="place-card place-card--active"
+                    type="button"
+                    data-place="서울역"
+                  >
+                    <span class="place-icon" aria-hidden="true">⌖</span>
+                    <span class="place-copy">
+                      <strong>서울역</strong>
+                      <small>서울 용산구 한강대로 405</small>
+                      <em>3.2 km · 약 12분</em>
+                    </span>
+                    <i aria-hidden="true">›</i>
+                  </button>
+                  <button class="place-card" type="button" data-place="남산서울타워">
+                    <span class="place-icon" aria-hidden="true">⌖</span>
+                    <span class="place-copy">
+                      <strong>남산서울타워</strong>
+                      <small>서울 용산구 남산공원길 105</small>
+                      <em>5.8 km · 약 19분</em>
+                    </span>
+                    <i aria-hidden="true">›</i>
+                  </button>
+                  <button class="place-card" type="button" data-place="코엑스">
+                    <span class="place-icon" aria-hidden="true">⌖</span>
+                    <span class="place-copy">
+                      <strong>코엑스</strong>
+                      <small>서울 강남구 영동대로 513</small>
+                      <em>11.4 km · 약 31분</em>
+                    </span>
+                    <i aria-hidden="true">›</i>
+                  </button>
+                </div>
+              </aside>
+
+              <section class="navigation-map" aria-label="길안내 지도">
+                <div class="map-canvas map-canvas--navigation">
+                  <div
+                    id="navigation-kakao-map"
+                    class="api-map-layer"
+                    aria-hidden="true"
+                  ></div>
+                  <div class="map-grid" aria-hidden="true"></div>
+                  <span class="road road--1" aria-hidden="true"></span>
+                  <span class="road road--2" aria-hidden="true"></span>
+                  <span class="road road--3" aria-hidden="true"></span>
+                  <span class="road road--4" aria-hidden="true"></span>
+                  <span class="road road--5" aria-hidden="true"></span>
+                  <span class="road road--6" aria-hidden="true"></span>
+
+                  <span
+                    class="route-line route-line--1"
+                    aria-hidden="true"
+                    hidden
+                  ></span>
+                  <span
+                    class="route-line route-line--2"
+                    aria-hidden="true"
+                    hidden
+                  ></span>
+                  <span
+                    class="route-line route-line--3"
+                    aria-hidden="true"
+                    hidden
+                  ></span>
+                  <span
+                    class="route-line route-line--4"
+                    aria-hidden="true"
+                    hidden
+                  ></span>
+
+                  <span class="map-label map-label--city">서울역</span>
+                  <span class="map-label map-label--park">남산공원</span>
+                  <span class="map-label map-label--river">한강대로</span>
+
+                  <div class="current-location current-location--route">
+                    <span class="location-pulse"></span>
+                    <span class="location-marker">▲</span>
+                  </div>
+                  <div class="destination-pin" hidden>
+                    <span aria-hidden="true">●</span>
+                    <strong id="map-destination"></strong>
+                  </div>
+
+                  <div class="route-banner" hidden>
+                    <span class="turn-icon" aria-hidden="true">↱</span>
+                    <span>
+                      <small id="route-step-distance">경로 준비</small>
+                      <strong id="route-step-instruction"></strong>
+                    </span>
+                    <em id="route-savings">대기</em>
+                  </div>
+
+                  <div class="map-zoom" aria-label="지도 확대 및 축소">
+                    <button type="button" data-map-zoom="in" aria-label="지도 확대">
+                      +
+                    </button>
+                    <button type="button" data-map-zoom="out" aria-label="지도 축소">
+                      −
+                    </button>
+                  </div>
+
+                  <div class="route-summary" hidden>
+                    <span>
+                      <small>도착 예정</small>
+                      <strong id="route-arrival">--:--</strong>
+                    </span>
+                    <span>
+                      <small>남은 시간</small>
+                      <strong id="route-duration">--</strong>
+                    </span>
+                    <span>
+                      <small>남은 거리</small>
+                      <strong id="route-distance">--</strong>
+                    </span>
+                    <button type="button" id="route-cancel">안내 종료</button>
+                  </div>
+                </div>
+              </section>
+            </section>
+
+            <section
+              id="weather-view"
+              class="app-view"
+              data-view="weather"
+              aria-labelledby="weather-title"
+              hidden
+            >
+              <section class="weather-hero">
+                <div class="weather-hero-copy">
+                  <p class="eyebrow">CURRENT WEATHER</p>
+                  <h2 id="weather-title" tabindex="-1">서울의 오늘</h2>
+                  <p id="weather-date">7월 30일 목요일</p>
+                </div>
+
+                <div class="current-weather-visual">
+                  <div id="weather-hero-icon" class="sun-visual" aria-hidden="true">
+                    <span></span>
+                    <i></i><i></i><i></i><i></i>
+                  </div>
+                  <div class="current-temperature">
+                    <strong id="weather-current-temperature">24</strong>
+                    <sup>°</sup>
+                    <span>
+                      <b id="weather-current-description">맑음</b>
+                      <small id="weather-current-feels-like">체감온도 25°</small>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="weather-details">
+                  <article>
+                    <span aria-hidden="true">◌</span>
+                    <div>
+                      <small>습도</small>
+                      <strong id="weather-humidity">58%</strong>
+                    </div>
+                  </article>
+                  <article>
+                    <span aria-hidden="true">≋</span>
+                    <div>
+                      <small>바람</small>
+                      <strong id="weather-wind">2.1 m/s</strong>
+                    </div>
+                  </article>
+                  <article>
+                    <span aria-hidden="true">◫</span>
+                    <div>
+                      <small>기압</small>
+                      <strong id="weather-pressure">1013 hPa</strong>
+                    </div>
+                  </article>
+                  <article>
+                    <span aria-hidden="true">◎</span>
+                    <div>
+                      <small>가시거리</small>
+                      <strong id="weather-visibility">18 km</strong>
+                    </div>
+                  </article>
+                </div>
+
+                <div class="driving-tip">
+                  <span aria-hidden="true">✦</span>
+                  <p>
+                    <strong>드라이빙 인사이트</strong>
+                    <span id="driving-tip-copy">
+                      강수 가능성이 낮아 쾌적한 주행이 예상됩니다.
+                    </span>
+                  </p>
+                </div>
+              </section>
+
+              <section class="forecast-section">
+                <div class="forecast-heading">
+                  <div>
+                    <p class="eyebrow">3-HOUR FORECAST</p>
+                    <h3>시간대별 예보</h3>
+                  </div>
+                  <button
+                    id="forecast-orientation"
+                    class="orientation-toggle"
+                    type="button"
+                    aria-pressed="false"
+                  >
+                    <span aria-hidden="true">↕</span>
+                    세로 보기
+                  </button>
+                </div>
+
+                <div
+                  id="forecast-cards"
+                  class="forecast-cards"
+                  data-orientation="horizontal"
+                  aria-label="3시간 간격 시간대별 예보"
+                  aria-live="polite"
+                  tabindex="0"
+                >
+                  <p class="forecast-loading">최신 예보를 불러오는 중입니다.</p>
+                </div>
+
+                <div class="daily-outlook">
+                  <span id="daily-outlook-label-0">오늘</span>
+                  <div class="temperature-track">
+                    <i id="daily-outlook-track-0"></i>
+                  </div>
+                  <strong id="daily-outlook-min-0">--</strong>
+                  <strong id="daily-outlook-max-0">--</strong>
+                </div>
+                <div class="daily-outlook">
+                  <span id="daily-outlook-label-1">내일</span>
+                  <div class="temperature-track">
+                    <i id="daily-outlook-track-1"></i>
+                  </div>
+                  <strong id="daily-outlook-min-1">--</strong>
+                  <strong id="daily-outlook-max-1">--</strong>
+                </div>
+              </section>
+            </section>
+            <section id="settings-view" class="app-view settings-view" data-view="settings" aria-labelledby="settings-title" hidden>
+              <h1 id="settings-title" class="sr-only" tabindex="-1">로그 관리 DashBoard</h1>
+              <iframe id="logs-frame" title="차량 로그 DashBoard" data-src="/logs/?embedded=1" allow="clipboard-write"></iframe>
+            </section>
+          </div>
+
+          <footer class="screen-footer">
+            <div class="climate-control" aria-label="운전석 온도">
+              <span aria-hidden="true">◒</span>
+              <strong>22.0°</strong>
+              <small>AUTO</small>
+            </div>
+
+            <nav class="bottom-dock" aria-label="주요 화면">
+              <button
+                class="dock-button dock-button--active"
+                type="button"
+                data-view-target="home" aria-label="HOME"
+                aria-current="page"
+              >
+                <span aria-hidden="true">⌂</span>
+                <small>HOME</small>
+              </button>
+              <button
+                class="dock-button"
+                type="button"
+                data-view-target="navigation" aria-label="NAVI"
+              >
+                <span aria-hidden="true">⌖</span>
+                <small>NAVI</small>
+              </button>
+              <button class="dock-button" type="button" data-view-target="weather" aria-label="WEATHER">
+                <span aria-hidden="true">☀</span>
+                <small>WEATHER</small>
+              </button>
+              <button class="dock-button" type="button" data-view-target="settings" aria-label="SETTING">
+                <span aria-hidden="true">⚙</span>
+                <small>SETTING</small>
+              </button>
+            </nav>
+
+            <div class="climate-control climate-control--passenger" aria-label="동승석 온도">
+              <small>SYNC</small>
+              <strong>22.0°</strong>
+              <span aria-hidden="true">◒</span>
+            </div>
+          </footer>
+
+          <div id="route-confirmation" class="route-confirmation" hidden>
+            <section
+              class="route-confirmation-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="route-confirmation-title"
+              aria-describedby="route-confirmation-address route-confirmation-eta-value"
+            >
+              <span class="route-confirmation-icon" aria-hidden="true">⌖</span>
+              <p class="eyebrow">ROUTE GUIDANCE</p>
+              <h2 id="route-confirmation-title">길안내를 시작할까요?</h2>
+              <strong id="route-confirmation-name"></strong>
+              <p
+                id="route-confirmation-address"
+                class="route-confirmation-address"
+              ></p>
+              <div
+                class="route-confirmation-eta"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                <span class="route-confirmation-eta-icon" aria-hidden="true">◷</span>
+                <span>
+                  <small>도착 예정</small>
+                  <strong id="route-confirmation-eta-value">계산 중…</strong>
+                </span>
+              </div>
+              <div class="route-confirmation-actions">
+                <button
+                  id="route-confirmation-cancel"
+                  type="button"
+                  class="route-confirmation-cancel"
+                >
+                  취소
+                </button>
+                <button
+                  id="route-confirmation-start"
+                  type="button"
+                  class="route-confirmation-start"
+                >
+                  안내 시작
+                </button>
+              </div>
+            </section>
+          </div>
+
+          <div
+            id="app-toast"
+            class="app-toast"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/vendor/axios/axios.min.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>

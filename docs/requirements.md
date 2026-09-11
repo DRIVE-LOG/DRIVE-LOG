@@ -4,14 +4,14 @@
 
 ## 범위
 
-차량 로그 관리 앱으로, 현재 화면 구성은 단일 DashBoard다. 별도의 인포테인먼트 홈과 사이드바 데이터 업로드 메뉴는 제외하고 상단 로그 업로드 버튼으로 파일을 등록한다. 사용자 ID 필터(F207)까지 포함한다. 실제 구현 소스와 프로젝트 문서만 버전 관리한다.
+PJT1 인포테인먼트 HOME의 SETTING 메뉴에서 로그 DashBoard로 진입한다. 차량 배경과 공통 헤더·HOME 하단 바는 PJT1에서 제공하며, 로그 내부 사이드바는 DashBoard만 표시하고 상단 버튼으로 파일을 등록한다. 사용자 ID 필터(F207)까지 포함한다. 실제 구현 소스와 프로젝트 문서만 버전 관리한다.
 
 | 번호 | 우선순위 | 요구사항 | 구현 위치 / 검증 방법 |
 |---|---|---|---|
 | F201 | 필수 | 파일을 행 단위로 원시 컬렉션에 저장 | `dist/app.js`, `dist/services.js`, `functions/lib/upload.js`. 빈 줄을 제외한 모든 행을 보존, 동시 저장 8개, 진행률·실패 건수·실패 재시도 제공 |
 | F202 | 필수 | 생성 즉시 서버리스 정제 | `functions/index.js`의 `onDocumentCreated`, `functions/processor.js`. 서울 리전 배포 및 실제 실행 검증 완료 |
 | F203 | 필수 | 정제 로그를 구조화된 전용 컬렉션에 저장 | `telematics_logs/{원시 문서 ID}`. KST 원본을 Timestamp로 저장, 측정값·문자·좌표·품질 정보 구분 |
-| F204 | 필수 | 새로고침 없는 최신순 로그 표시 | `onSnapshot` 구독, 최신순 정렬, DashBoard 직접 진입, 헤더·사이드바·고정 하단 바. 원명세의 Home → Setting 진입은 현재 화면 구성에서 제외 |
+| F204 | 필수 | 새로고침 없는 최신순 로그 표시 | `onSnapshot` 구독, 최신순 정렬, PJT1 HOME → SETTING 진입, 공통 헤더·차량 배경·고정 HOME 하단 바 |
 | F205 | 필수 | 날짜·등급·키워드 복합 검색 | `functions/lib/query.js`, `dist/app.js`. 한국 시간 기준 시작일/종료일 포함, 메시지·사용자 대소문자 무시 검색 |
 | F206 | 필수 | 등급별 시각적 구분 | INFO 민트, WARNING 황색, ERROR/CRITICAL 적색, DEBUG 청색. 색상과 함께 등급 이름 표시 |
 | F207 | 심화 | 사용자 ID 기반 필터 | 실제 로그의 `user`로 선택지를 생성하고 다른 조건과 결합 |
@@ -63,7 +63,7 @@ TXT/LOG 선택 → 행/품질 미리보기 → 업로드
 
 `npm run check`: JavaScript 구문, JSON 설정, HTML ID 연결, 정적 리소스 경로 및 브라우저/Functions 공통 모듈의 동일성을 검사한다.
 
-실제 Firebase 프로젝트를 연결하여 Cloud Functions ACTIVE 상태, Firestore 사용자별 권한 규칙, 인덱스 쿼리, 익명 로그인과 업로드→정제→조회 실행을 검증했다. 결과는 `docs/firebase-connection.md`에 기록했다. 브라우저에서 전체 파일 업로드 완료와 실제 정제 로그 1,000건 조회를 확인했다. 먼저 저장한 10행과 전체 파일 간 중복은 생기지 않았다. 화면 캡처 검수는 수행하지 않았다. WebMCP는 지원 브라우저에서만 활성화되며 해당 컨텍스트에서의 동작 검증은 미실시다.
+실제 Firebase 프로젝트를 연결하여 Cloud Functions ACTIVE 상태, Firestore 사용자별 권한 규칙, 인덱스 쿼리, 익명 로그인과 업로드→정제→조회 실행을 검증했다. 결과는 `docs/firebase-connection.md`에 기록했다. 브라우저에서 전체 파일 업로드 완료와 실제 정제 로그 1,000건 조회를 확인했다. 먼저 저장한 10행과 전체 파일 간 중복은 생기지 않았다. 통합 화면의 HOME·SETTING·검색·상세·업로드 실행 캡처를 submission/screenshots에 저장했다. WebMCP는 지원 브라우저에서만 활성화되며 해당 컨텍스트에서의 동작 검증은 미실시다.
 
 ## 정렬과 상세 탐색
 
