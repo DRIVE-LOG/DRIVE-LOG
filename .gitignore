@@ -15,6 +15,7 @@ output/
 # Supplied course materials and source datasets (not project source)
 /*.pdf
 /*.zip
+!/임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip
 /log_upload/
 /data/
 

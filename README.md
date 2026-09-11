@@ -13,7 +13,7 @@ PJT1 인포테인먼트의 `SETTING` 메뉴에서 차량 로그 DashBoard로 진
 | 프로젝트 공유 | [GitHub 저장소](https://github.com/DRIVE-LOG/DRIVE-LOG) |
 | 결과 문서 | [구현 결과와 실행 화면](submission/RESULTS.md) |
 | 파일 목록 | [압축 내부 전체 파일과 제외 항목](submission/FILES.md) |
-| 제출 파일 | [임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip](submission/임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip) |
+| 제출 파일 | [임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip](임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip) |
 
 GitLab에는 최종 제출본을, GitHub에는 동일한 프로젝트 파일과 README를 제공합니다. 두 저장소의 기존 커밋 이력은 각각 유지합니다.
 
@@ -28,9 +28,11 @@ GitLab에는 최종 제출본을, GitHub에는 동일한 프로젝트 파일과 
 | 실행·검증 파일 | `scripts/`, `tests/`, 패키지·Firebase 설정 파일 | 서버, 빌드, 자동 테스트, 의존성 잠금, 규칙·인덱스 |
 | 설계·연동 문서 | `docs/` | 요구사항별 구현 위치와 Firebase 검증 기록 |
 | 압축 파일 목록 | `submission/FILES.md`, ZIP 내부 `MANIFEST.sha256` | 파일별 경로와 무결성 확인용 SHA-256 |
-| 제출 ZIP | `submission/임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip` | 위 소스·문서·캡처를 하나의 프로젝트 폴더로 압축 |
+| 제출 ZIP | 최상위 `임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip` | 위 소스·문서·캡처를 하나의 프로젝트 폴더로 압축 |
 
 압축 파일명은 `임베디드_웹_관통PJT2_지역_반_성명1_성명2.zip` 형식입니다. 개선된 요구사항과 실행 화면은 결과 문서에 포함하며 소스와 함께 압축합니다. ZIP 자체는 ZIP 내부에 중복 포함하지 않습니다.
+
+최종 결과 문서는 명세서에서 허용한 Markdown 문서 형식으로 제공합니다. 개선된 요구사항과 실행 캡처가 포함되어 있으므로 별도 Word 또는 PowerPoint 파일은 필수 제출물이 아닙니다.
 
 ## 실행 흐름
 
@@ -205,7 +207,8 @@ node scripts/firebase-smoke.mjs
 ├─ scripts/                   # 빌드, 로컬 서버, 검사
 ├─ tests/                     # 독립적인 자동 테스트
 ├─ docs/                      # 구현 설계와 연동 검증 기록
-├─ submission/                # 결과 문서·실행 캡처·지정 형식 ZIP
+├─ submission/                # 결과 문서·실행 캡처·파일 목록
+├─ 임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip  # 제출 압축 파일
 ├─ firebase.json              # 배포 및 에뮬레이터 설정
 ├─ firestore.rules            # 사용자별 접근 규칙
 ├─ firestore.indexes.json     # 실시간 조회 인덱스
@@ -226,7 +229,7 @@ Functions의 장기 자동 재시도는 비활성화되어 있습니다. 서버 
 npm run package:submission
 ```
 
-패키징은 프로젝트 소스, 결과 문서, 실행 화면 캡처를 지정 이름의 ZIP으로 구성하고 `submission/FILES.md`를 실제 파일 목록으로 갱신합니다. ZIP 내부에는 각 파일의 SHA-256을 기록한 `MANIFEST.sha256`도 생성합니다. 압축 내부 README는 ZIP 자체를 가리키는 다운로드 링크만 파일명으로 바꾸며 나머지 안내는 저장소와 같습니다.
+패키징은 프로젝트 소스, 결과 문서, 실행 화면 캡처를 프로젝트 최상위의 지정 이름 ZIP으로 구성하고 `submission/FILES.md`를 실제 파일 목록으로 갱신합니다. ZIP 내부에는 각 파일의 SHA-256을 기록한 `MANIFEST.sha256`도 생성합니다. 압축 내부 README는 ZIP 자체를 가리키는 다운로드 링크만 파일명으로 바꾸며 나머지 안내는 저장소와 같습니다.
 
 `.git`, 의존성 설치 폴더, 원본 PDF·ZIP·데이터, 실제 Firebase 설정, `.env`, 개인 키, 임시 출력은 GitLab·GitHub·제출 ZIP에서 모두 제외합니다. Firebase의 실제 데이터베이스 내용도 Git에 내보내지 않습니다. 실행 캡처와 검증 집계만 결과 문서에 포함합니다. 새 환경은 개인 Firebase 설정과 업로드할 로그가 필요하며, 설정 후 위의 설치·실행 절차를 따르면 됩니다.
 

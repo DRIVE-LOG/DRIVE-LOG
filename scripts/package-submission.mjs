@@ -25,7 +25,7 @@ files.push('submission/FILES.md');
 const inventory = [
   '# 제출 ZIP 파일 목록',
   '',
-  `제출 파일: \`${name}.zip\``,
+  `제출 파일: 프로젝트 최상위의 \`${name}.zip\``,
   '',
   `압축 최상위 폴더는 \`${name}/\`이며, 아래 ${files.length}개 파일과 자동 생성되는 \`MANIFEST.sha256\` 1개를 포함합니다. 이 목록은 \`npm run package:submission\`으로 실제 포함 경로에서 생성합니다.`,
   '',
@@ -52,7 +52,7 @@ const entries = {}, manifest = [];
 for (const relative of files.sort()) {
   let bytes = await readFile(path.join(root, relative));
   // The archive cannot contain itself; keep the repository download link as a filename inside it.
-  if (relative === 'README.md') bytes = Buffer.from(bytes.toString('utf8').replace(`[${name}.zip](submission/${name}.zip)`, `\`${name}.zip\``));
+  if (relative === 'README.md') bytes = Buffer.from(bytes.toString('utf8').replace(`[${name}.zip](${name}.zip)`, `\`${name}.zip\``));
   if (/\.(?:js|mjs|json|html|md|css)$/.test(relative)) {
     const text = bytes.toString('utf8');
     if (/-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----|AIza[0-9A-Za-z_-]{30,}|ghp_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{30,}/.test(text)) throw new Error(`Credential-like content in ${relative}`);
@@ -65,6 +65,5 @@ const zip = zipSync(entries, { level: 6 });
 const verified = unzipSync(zip);
 if (Object.keys(verified).length !== Object.keys(entries).length) throw new Error('ZIP entry count mismatch');
 for (const [entry, bytes] of Object.entries(entries)) if (!Buffer.from(verified[entry]).equals(bytes)) throw new Error(`ZIP content mismatch: ${entry}`);
-await mkdir(path.join(root, 'submission'), { recursive: true });
-await writeFile(path.join(root, 'submission', `${name}.zip`), zip);
-console.log(`Verified ${Object.keys(entries).length} entries, ${(zip.byteLength / 1024 / 1024).toFixed(2)} MB: submission/${name}.zip`);
+await writeFile(path.join(root, `${name}.zip`), zip);
+console.log(`Verified ${Object.keys(entries).length} entries, ${(zip.byteLength / 1024 / 1024).toFixed(2)} MB: ${name}.zip`);

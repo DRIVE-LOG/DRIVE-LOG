@@ -6,6 +6,7 @@
 - 장문수: 1644387
 - 최현준: 1645145
 - 제출 파일명: `임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip`
+- 제출 ZIP 위치: 프로젝트 최상위 (submission 폴더 밖)
 - 제출 저장소: https://lab.ssafy.com/s16/a20/20260911-pjt-2/1644387-1645145
 - 동일 프로젝트 공유: https://github.com/DRIVE-LOG/DRIVE-LOG
 - 압축 내부 전체 목록: [FILES.md](FILES.md)
