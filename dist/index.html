@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#11151b">
+  <meta name="description" content="차량 로그 수집, 정제 및 실시간 모니터링을 위한 텔레매틱스 관리 시스템">
+  <title>DRIVE / LOG — 차량 로그 관리</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div class="cockpit">
+    <header class="system-header">
+      <a class="brand" href="#logs" aria-label="DRIVE LOG 로그 관리"><span class="brand-symbol">D<span>/</span></span><span>DRIVE<span class="brand-slash"> / </span>LOG</span></a>
+      <div class="system-meta"><time id="clock">--:--</time></div>
+    </header>
+    <div class="workspace">
+      <aside class="sidebar">
+        <div><nav aria-label="주 메뉴">
+          <button class="nav-item active" id="logs-nav" aria-current="page"><span aria-hidden="true">▤</span>DashBoard<span class="nav-count" id="nav-count">—</span></button>
+        </nav></div>
+      </aside>
+      <main id="main">
+        <section id="logs-view" aria-labelledby="page-title">
+          <div class="page-heading"><div><h1 id="page-title">DashBoard<span class="heading-dot">.</span></h1></div><button class="primary-button" id="upload-button"><span aria-hidden="true">＋</span> 로그 업로드</button></div>
+          <div class="stats" aria-label="조회 결과 요약">
+            <article class="stat-card"><span>조회된 로그</span><strong id="stat-total">—</strong><small id="stat-users">전체 사용자</small><span class="stat-icon" aria-hidden="true">▤</span></article>
+            <article class="stat-card warning-stat"><span>주의 · WARNING</span><strong id="stat-warning">—</strong><small>충돌 등 주의 이벤트</small><span class="stat-icon" aria-hidden="true">△</span></article>
+            <article class="stat-card critical-stat"><span>위험 · ERROR / CRITICAL</span><strong id="stat-critical">—</strong><small>즉시 확인이 필요한 기록</small><span class="stat-icon" aria-hidden="true">!</span></article>
+            <article class="stat-card"><span>데이터 확인 필요</span><strong id="stat-quality">—</strong><small>누락 또는 잘못된 측정값</small><span class="stat-icon" aria-hidden="true">◌</span></article>
+          </div>
+          <div class="log-panel">
+            <div class="panel-title-row"><div class="panel-title">실시간 로그 <span class="live-label" id="live-label"><i></i> LIVE</span></div><button class="text-button" id="reset-filters">필터 초기화 ↻</button></div>
+            <form id="filter-form" class="filters" role="search">
+              <label class="search-field"><span>키워드 검색</span><input id="search-input" type="search" placeholder="메시지, 이벤트, 사용자 검색" autocomplete="off"></label>
+              <label><span>시작일 · KST</span><input id="start-date" type="date"></label>
+              <label><span>종료일 · KST</span><input id="end-date" type="date"></label>
+              <label><span>로그 등급</span><select id="level-filter"><option value="">전체 등급</option><option>INFO</option><option>WARNING</option><option>ERROR</option><option>CRITICAL</option><option>DEBUG</option></select></label>
+              <label><span>사용자</span><select id="user-filter"><option value="">전체 사용자</option></select></label>
+            </form>
+            <p id="filter-error" class="inline-error" role="alert" hidden></p>
+            <div class="result-bar"><p><strong id="result-count">0</strong>개의 기록 <span id="result-range"></span></p><span id="sort-summary" aria-live="polite">기본 · 최신순</span></div>
+            <div class="table-scroll"><table><caption class="sr-only">차량 로그 목록. 열 제목으로 정렬하고 로그 행이나 상세 버튼으로 로그 정보를 확인할 수 있습니다.</caption><thead><tr><th scope="col" aria-sort="none"><button class="sort-button" data-sort="timestamp" data-direction="default"><span>기록 시각 <span class="muted">KST</span></span><span class="sort-arrows" aria-hidden="true"><span class="sort-up">↑</span><span class="sort-down">↓</span></span></button></th><th scope="col" aria-sort="none"><button class="sort-button" data-sort="log_level" data-direction="default"><span>등급</span><span class="sort-arrows" aria-hidden="true"><span class="sort-up">↑</span><span class="sort-down">↓</span></span></button></th><th scope="col" aria-sort="none"><button class="sort-button" data-sort="user" data-direction="default"><span>사용자</span><span class="sort-arrows" aria-hidden="true"><span class="sort-up">↑</span><span class="sort-down">↓</span></span></button></th><th scope="col" aria-sort="none"><button class="sort-button" data-sort="message" data-direction="default"><span>메시지</span><span class="sort-arrows" aria-hidden="true"><span class="sort-up">↑</span><span class="sort-down">↓</span></span></button></th><th scope="col" aria-sort="none"><button class="sort-button" data-sort="Speed" data-direction="default"><span>속도 <span class="muted">km/h</span></span><span class="sort-arrows" aria-hidden="true"><span class="sort-up">↑</span><span class="sort-down">↓</span></span></button></th><th scope="col" aria-sort="none"><button class="sort-button" data-sort="EngTemp" data-direction="default"><span>엔진 <span class="muted">°C</span></span><span class="sort-arrows" aria-hidden="true"><span class="sort-up">↑</span><span class="sort-down">↓</span></span></button></th><th scope="col"><span class="sr-only">상세</span></th></tr></thead><tbody id="log-rows"></tbody></table></div>
+            <div class="empty-state" id="empty-state" hidden><span aria-hidden="true">⌕</span><strong>조건에 맞는 로그가 없습니다.</strong><p>필터를 조정하거나 로그 파일을 업로드해 주세요.</p></div>
+            <div class="pagination"><span id="page-summary">데이터 로딩 중</span><div><label class="page-size-label">표시 <select id="page-size"><option value="20">20개</option><option value="50">50개</option><option value="100">100개</option></select></label><button id="previous-page" class="icon-button" aria-label="이전 페이지">‹</button><span id="page-number">1 / 1</span><button id="next-page" class="icon-button" aria-label="다음 페이지">›</button></div></div>
+          </div>
+          <div class="bottom-note"><span><i class="mint-dot"></i><span id="sync-status">데이터를 준비하고 있습니다.</span></span><button class="text-button" id="retry-connection" hidden>다시 연결</button></div>
+        </section>
+      </main>
+    </div>
+    <footer class="system-footer"><span>DRIVE / LOG <span class="footer-divider">|</span> 로그 데이터 관리 시스템</span><span class="footer-right">SEOUL · KST</span></footer>
+  </div>
+  <dialog id="upload-dialog" aria-labelledby="upload-title"><div class="dialog-heading"><div><p class="eyebrow">DATA IMPORT</p><h2 id="upload-title">로그 업로드</h2></div><button class="icon-button" data-close="upload-dialog" aria-label="닫기">×</button></div><p class="dialog-description" id="upload-mode-description">차량 로그 파일을 업로드하면 처리 결과가 목록에 반영됩니다.</p><label class="dropzone" id="dropzone"><input type="file" id="file-input" accept=".txt,.log,text/plain" class="sr-only"><span class="upload-glyph" aria-hidden="true">↥</span><strong>로그 파일을 놓거나 선택하세요</strong><span>TXT, LOG · 최대 5 MB · 10,000행</span></label><div id="upload-preview" hidden></div><div id="upload-progress-area" hidden><progress id="upload-progress" max="100" value="0"></progress><p id="upload-progress-label" role="status"></p></div><p class="inline-error" id="upload-error" role="alert" hidden></p><div class="dialog-actions"><button class="primary-button" id="confirm-upload" disabled>업로드 시작</button></div></dialog>
+  <dialog id="detail-dialog" class="detail-dialog" aria-labelledby="detail-title"><div class="dialog-heading"><div><p class="eyebrow">LOG INSPECTOR</p><h2 id="detail-title">로그 상세</h2></div><button class="icon-button" data-close="detail-dialog" aria-label="닫기">×</button></div><div id="detail-content"></div><div class="detail-navigation"><button class="secondary-button" id="detail-previous" aria-label="이전 로그">← 이전</button><span id="detail-position" role="status"></span><button class="secondary-button" id="detail-next" aria-label="다음 로그">다음 →</button></div></dialog>
+  <div class="toast" id="toast" role="status" hidden></div>
+</body>
+</html>

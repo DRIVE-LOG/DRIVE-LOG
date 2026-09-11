@@ -1,0 +1,26 @@
+node_modules/
+functions/node_modules/
+.firebase/
+*-debug.log
+dist/lib/
+dist/data/
+dist/vendor/
+dist/config.local.js
+.env
+.env.*
+!.env.example
+.sites-runtime/
+output/
+
+# Supplied course materials and source datasets (not project source)
+/*.pdf
+/*.zip
+/log_upload/
+/data/
+
+# Local Firebase selection and credentials
+.firebaserc
+*service-account*.json
+*serviceAccount*.json
+*.pem
+*.key

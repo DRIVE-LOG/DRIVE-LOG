@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owns(data) { return signedIn() && data.ownerUid == request.auth.uid; }
+    match /raw_telematics_logs/{id} {
+      allow get: if signedIn() && (!exists(/databases/$(database)/documents/raw_telematics_logs/$(id)) || owns(resource.data));
+      allow list: if owns(resource.data);
+      allow create: if owns(request.resource.data)
+        && request.resource.data.keys().hasAll(['log', 'ownerUid', 'fileName', 'lineNumber', 'uploadedAt', 'status'])
+        && request.resource.data.keys().hasOnly(['log', 'ownerUid', 'fileName', 'lineNumber', 'uploadedAt', 'status'])
+        && request.resource.data.log is string
+        && request.resource.data.log.size() > 0 && request.resource.data.log.size() <= 10000
+        && request.resource.data.fileName is string && request.resource.data.fileName.size() <= 255
+        && request.resource.data.lineNumber is int && request.resource.data.lineNumber > 0
+        && request.resource.data.uploadedAt == request.time
+        && request.resource.data.status == 'pending';
+      allow update, delete: if false;
+    }
+    match /telematics_logs/{id} {
+      allow read: if owns(resource.data);
+      allow write: if false;
+    }
+  }
+}

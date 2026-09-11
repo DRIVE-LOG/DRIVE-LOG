@@ -1,0 +1,55 @@
+# Firebase 연결 완료
+
+- 프로젝트: **DRIVE LOG PJT2**
+- 프로젝트 ID: `drive-log-pjt2-260911-7a90f`
+- 웹 앱: `DRIVE LOG Web`
+- 앱 ID: `1:812533868427:web:d59b2442d18d5ae489718e`
+- Firestore: `(default)`, Standard, 서울 `asia-northeast3`
+- Authentication: 익명 로그인 활성화
+- Functions: `processRawLogs`, Node.js 22 / 2세대 / 서울, 상태 **ACTIVE**
+- 요금제: Blaze
+- 접근 규칙: 원시·정제 데이터 모두 `ownerUid` 기준으로 본인 데이터만 조회
+- 복합 인덱스: `ownerUid ASC + timestamp DESC` 배포 및 실제 쿼리 확인
+- 실제 프로젝트 선택과 웹 설정은 로컬 `.firebaserc`, `dist/config.local.js`에서 관리하며 Git에서 제외
+
+## 실제 검증 결과
+
+2026-09-11에 `node scripts/firebase-smoke.mjs`로 클라우드 통합 검증을 수행했다.
+
+| 검증 | 결과 |
+|---|---|
+| 익명 인증 | 성공 |
+| 원시 로그 저장 | 정상 10행 + 잘못된 헤더 1행 저장 |
+| Functions 트리거 | 정상 10행 자동 정제 |
+| 잘못된 헤더 | 원문 유지 + rejected + parseError |
+| 데이터 정제 | 음수 가속도, null 누락값, 위도·경도 보존 |
+| 실시간 조회용 복합 인덱스 쿼리 | 성공 |
+| 다른 사용자의 원시/정제 데이터 읽기 | 403 거절 |
+| 미인증 읽기 | 403 거절 |
+| 클라이언트의 정제 데이터 직접 수정 | 403 거절 |
+
+검증 결과는 로컬 `output/firebase-smoke-result.json`에 기록한다. 토큰은 파일이나 출력에 남기지 않는다. 검증용 계정/레코드는 실제 프로젝트에 남아 있으며 일반 앱 계정의 목록과 분리된다.
+
+## 앱 화면 검증
+
+로컬 앱에서 10행 업로드 후 전체 `vehicle-logs.txt`를 업로드했다. 기존 10행은 재사용하고 나머지 990행을 저장했으며, 새로고침 후 실제 Firebase 데이터 **1,000건**, 사용자 **5명**, WARNING **204건**, CRITICAL **89건**, 데이터 확인 필요 **151건**과 `실시간 연결됨` 상태를 확인했다. 샘플 모드 전환·프로젝트 ID·개발용 안내는 화면에서 제거했다.
+
+## 동작 및 운영
+
+`npm start` 후 `http://127.0.0.1:4173`으로 접속하면 설정된 Firebase 프로젝트에 자동 연결한다. 새 브라우저/프로필은 새 익명 계정을 사용하므로 다른 브라우저의 로그는 보이지 않는다.
+
+Functions의 장기 자동 재시도 정책은 `retry: false`다. 앱 업로드 실패 재시도와 중복 문서 방지는 유지한다. 일시적 서버 오류로 정제되지 않은 pending 원문은 Functions 로그를 확인해 별도로 복구해야 한다.
+
+Artifact Registry 컨테이너 이미지의 자동 삭제 정책은 설정하지 않았다.
+
+프런트엔드는 로컬에서 실행하며 외부 Hosting 공개 배포는 하지 않았다.
+
+[프로젝트 콘솔](https://console.firebase.google.com/project/drive-log-pjt2-260911-7a90f/overview)
+
+[Firestore 데이터](https://console.firebase.google.com/project/drive-log-pjt2-260911-7a90f/firestore)
+
+[Functions](https://console.firebase.google.com/project/drive-log-pjt2-260911-7a90f/functions)
+
+## DashBoard 동작 검증
+
+2026-09-11 브라우저에서 실제 1,000건으로 속도 오름차순·내림차순·기본 복귀, 정렬 중 날짜 범위 유지, 행 클릭 상세창, 첫 항목의 이전 버튼 비활성화, 20번째에서 21번째로 페이지 경계를 넘는 상세 이동을 확인했다. 기존 10행 파일 재업로드 후 창 자동 닫힘과 전체 1,000건 유지도 확인했다. 로컬 자동 테스트는 21개 통과했다.
