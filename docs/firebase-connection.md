@@ -1,9 +1,5 @@
 # Firebase 연결 완료
 
-- 프로젝트: **DRIVE LOG PJT2**
-- 프로젝트 ID: `drive-log-pjt2-260911-7a90f`
-- 웹 앱: `DRIVE LOG Web`
-- 앱 ID: `1:812533868427:web:d59b2442d18d5ae489718e`
 - Firestore: `(default)`, Standard, 서울 `asia-northeast3`
 - Authentication: 익명 로그인 활성화
 - Functions: `processRawLogs`, Node.js 22 / 2세대 / 서울, 상태 **ACTIVE**
@@ -43,12 +39,6 @@ Functions의 장기 자동 재시도 정책은 `retry: false`다. 앱 업로드 
 Artifact Registry 컨테이너 이미지의 자동 삭제 정책은 설정하지 않았다.
 
 프런트엔드는 로컬에서 실행하며 외부 Hosting 공개 배포는 하지 않았다.
-
-[프로젝트 콘솔](https://console.firebase.google.com/project/drive-log-pjt2-260911-7a90f/overview)
-
-[Firestore 데이터](https://console.firebase.google.com/project/drive-log-pjt2-260911-7a90f/firestore)
-
-[Functions](https://console.firebase.google.com/project/drive-log-pjt2-260911-7a90f/functions)
 
 ## DashBoard 동작 검증
 
