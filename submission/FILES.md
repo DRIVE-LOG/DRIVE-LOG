@@ -1,8 +1,8 @@
 # 제출 ZIP 파일 목록
 
-제출 파일: 프로젝트 최상위의 `임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip`
+제출 파일: `임베디드_웹_관통PJT5_서울_20반_장문수_최현준.zip` (기본 위치는 프로젝트 최상위, --output으로 변경 가능)
 
-압축 최상위 폴더는 `임베디드_웹_관통PJT2_서울_20반_장문수_최현준/`이며, 아래 49개 파일과 자동 생성되는 `MANIFEST.sha256` 1개를 포함합니다. 이 목록은 `npm run package:submission`으로 실제 포함 경로에서 생성합니다.
+압축 최상위 폴더는 `임베디드_웹_관통PJT5_서울_20반_장문수_최현준/`이며, 아래 118개 파일과 자동 생성되는 `MANIFEST.sha256` 1개를 포함합니다. 이 목록은 `npm run package:submission`으로 실제 포함 경로에서 생성합니다.
 
 ## 포함 파일
 
@@ -18,16 +18,24 @@
 - `dist/style.css`
 - `docs/firebase-connection.md`
 - `docs/requirements.md`
+- `docs/ui-restoration.md`
 - `firebase.json`
 - `firestore.indexes.json`
 - `firestore.rules`
+- `functions/.env.example`
+- `functions/api.js`
 - `functions/index.js`
+- `functions/lib/ai.js`
+- `functions/lib/analytics.js`
+- `functions/lib/http-app.js`
 - `functions/lib/parser.js`
+- `functions/lib/policies.js`
 - `functions/lib/query.js`
 - `functions/lib/upload.js`
 - `functions/package-lock.json`
 - `functions/package.json`
 - `functions/processor.js`
+- `functions/web-api.js`
 - `infotainment/.env.example`
 - `infotainment/public/app.js`
 - `infotainment/public/assets/vehicle-cockpit.png`
@@ -40,9 +48,16 @@
 - `package.json`
 - `scripts/build.mjs`
 - `scripts/check.mjs`
+- `scripts/cloud-access.mjs`
+- `scripts/cloud-smoke.mjs`
 - `scripts/firebase-smoke.mjs`
+- `scripts/grant-admin.mjs`
+- `scripts/local.mjs`
 - `scripts/package-submission.mjs`
+- `scripts/seed-local.mjs`
 - `scripts/serve.mjs`
+- `scripts/web-config.mjs`
+- `storage.rules`
 - `submission/FILES.md`
 - `submission/RESULTS.md`
 - `submission/screenshots/01_home_setting.png`
@@ -51,10 +66,64 @@
 - `submission/screenshots/04_log_detail.png`
 - `submission/screenshots/05_upload_preview.png`
 - `submission/screenshots/06_upload_complete.png`
+- `submission/screenshots/pjt5/admin.jpg`
+- `submission/screenshots/pjt5/analytics-desktop.jpg`
+- `submission/screenshots/pjt5/analytics-mobile.jpg`
+- `submission/screenshots/pjt5/chat-unconfigured.jpg`
+- `submission/screenshots/pjt5/google-login-verified.jpg`
+- `submission/screenshots/pjt5/home.jpg`
+- `submission/screenshots/pjt5/log-detail.jpg`
+- `submission/screenshots/pjt5/map-3d-desktop.png`
+- `submission/screenshots/pjt5/map-3d-mobile.png`
+- `submission/screenshots/pjt5/navigation-3d.png`
+- `submission/screenshots/pjt5/navigation-live.jpg`
+- `submission/screenshots/pjt5/weather-live.jpg`
+- `submission/screenshots/pjt5/weather-restored-desktop.png`
+- `submission/screenshots/pjt5/weather-restored-mobile-forecast.png`
+- `submission/screenshots/pjt5/weather-restored-mobile.png`
+- `submission/screenshots/pjt5/weather-restored-vertical.png`
+- `tests/analytics-ai.test.mjs`
+- `tests/emulator/features.test.mjs`
 - `tests/integration.test.mjs`
 - `tests/parser.test.mjs`
 - `tests/processor.test.mjs`
 - `tests/sorting.test.mjs`
+- `tests/speech.test.mjs`
+- `tests/weather-map.test.mjs`
+- `vite.config.js`
+- `web/index.html`
+- `web/src/App.vue`
+- `web/src/components/AdminPanel.vue`
+- `web/src/components/AppIcon.vue`
+- `web/src/components/KakaoMap.vue`
+- `web/src/components/LogFilters.vue`
+- `web/src/components/LogTable.vue`
+- `web/src/components/MapPanel.vue`
+- `web/src/components/MetricChart.vue`
+- `web/src/components/ModalDialog.vue`
+- `web/src/components/UploadDialog.vue`
+- `web/src/components/WeatherIcon.vue`
+- `web/src/components/WeatherSummary.vue`
+- `web/src/main.js`
+- `web/src/services/firebase.js`
+- `web/src/services/map-style.js`
+- `web/src/services/maps.js`
+- `web/src/services/speech.js`
+- `web/src/services/weather.js`
+- `web/src/stores/chat.js`
+- `web/src/stores/logs.js`
+- `web/src/stores/session.js`
+- `web/src/stores/weather.js`
+- `web/src/style.css`
+- `web/src/views/AnalyticsView.vue`
+- `web/src/views/ChatView.vue`
+- `web/src/views/HomeView.vue`
+- `web/src/views/LogsView.vue`
+- `web/src/views/NavigationView.vue`
+- `web/src/views/ProfilesView.vue`
+- `web/src/views/SettingsView.vue`
+- `web/src/views/WeatherView.vue`
+- `web/src/weather-map.css`
 - `MANIFEST.sha256` (압축 내부에만 생성)
 
 ## 제외 항목
@@ -66,4 +135,4 @@
 - 빌드 시 생성되는 dist/lib와 dist/vendor (npm start 시 재생성)
 - 제출 ZIP 자체 (재귀 압축 방지)
 
-실행에 필요한 Firebase 설정은 예시 파일을 복사해 별도로 입력합니다. 실행 방법과 두 저장소 주소는 루트 README.md를 참고하세요.
+실행에 필요한 Firebase 설정은 예시 파일을 복사해 별도로 입력합니다. 실행 방법은 루트 README.md를 참고하세요.

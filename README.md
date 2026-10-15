@@ -1,236 +1,103 @@
-# AURELIA DRIVE × DRIVE / LOG
+# DRIVE / LOG · PJT2–5
 
-PJT1 인포테인먼트의 `SETTING` 메뉴에서 차량 로그 DashBoard로 진입하는 PJT2 통합 프로젝트입니다. 차량 로그를 업로드하면 Firebase에서 정제하고 결과를 실시간으로 조회합니다. 날짜·등급·사용자·키워드로 기록을 찾고, 열별 정렬과 상세창을 통해 주행 상태와 이벤트를 확인할 수 있습니다.
+차량 로그 업로드부터 실시간 분석, 사용자 관리, AI 주행 대화까지 연결한 Vue 3 인포테인먼트 프로젝트입니다. 기존 차량 배경과 태블릿 UI를 유지하고 8개 화면을 Vue SFC, Vue Router, Pinia로 분리했습니다.
 
-## 제출 정보
+## 실행
 
-| 구분 | 내용 |
-| --- | --- |
-| 지역·반 | 서울 20반 |
-| 팀원 | 장문수(1644387), 최현준(1645145) |
-| 프로젝트 | 임베디드 웹 관통 PJT2 · 로그 데이터 관리 |
-| 최종 제출 | [GitLab 저장소](https://lab.ssafy.com/s16/a20/20260911-pjt-2/1644387-1645145) |
-| 프로젝트 공유 | [GitHub 저장소](https://github.com/DRIVE-LOG/DRIVE-LOG) |
-| 결과 문서 | [구현 결과와 실행 화면](submission/RESULTS.md) |
-| 파일 목록 | [압축 내부 전체 파일과 제외 항목](submission/FILES.md) |
-| 제출 파일 | [임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip](임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip) |
+Node.js 22 이상과 Java 21 이상이 필요합니다. 실제 배포 함수는 Node.js 22를 사용합니다.
 
-GitLab에는 최종 제출본을, GitHub에는 동일한 프로젝트 파일과 README를 제공합니다. 두 저장소의 기존 커밋 이력은 각각 유지합니다.
+```powershell
+npm ci
+npm --prefix functions ci
+npm run start:local
+```
 
-## 제출 파일 안내
+로컬 앱은 http://localhost:4173, Firebase Emulator UI는 http://localhost:4000 에서 열립니다. 이 모드는 실제 Firebase 데이터를 사용하지 않습니다. 별도 터미널에서 체험 계정을 준비할 수 있습니다.
 
-| 산출물 | 위치 | 포함 내용 |
+```powershell
+npm run seed:local
+```
+
+| 계정 | 초기 비밀번호 | 용도 |
 | --- | --- | --- |
-| 프로젝트 안내 | `README.md` | 통합 흐름, 설치·실행, Firebase 준비, 기능 및 검증 |
-| 최종 결과 문서 | `submission/RESULTS.md` | 요구사항 대응, 개선된 요구사항, 실행 결과 |
-| 실행 화면 6장 | `submission/screenshots/` | HOME, DashBoard, 검색·정렬, 상세, 업로드 미리보기·완료 |
-| 전체 구현 소스 | `infotainment/`, `dist/`, `functions/` | PJT1 통합 화면, 로그 UI, Firebase 정제 처리 |
-| 실행·검증 파일 | `scripts/`, `tests/`, 패키지·Firebase 설정 파일 | 서버, 빌드, 자동 테스트, 의존성 잠금, 규칙·인덱스 |
-| 설계·연동 문서 | `docs/` | 요구사항별 구현 위치와 Firebase 검증 기록 |
-| 압축 파일 목록 | `submission/FILES.md`, ZIP 내부 `MANIFEST.sha256` | 파일별 경로와 무결성 확인용 SHA-256 |
-| 제출 ZIP | 최상위 `임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip` | 위 소스·문서·캡처를 하나의 프로젝트 폴더로 압축 |
+| demo-member@example.test | Drive-log-demo-123! | 일반 회원 |
+| demo-admin@example.test | Drive-log-demo-123! | 관리자 |
 
-압축 파일명은 `임베디드_웹_관통PJT2_지역_반_성명1_성명2.zip` 형식입니다. 개선된 요구사항과 실행 화면은 결과 문서에 포함하며 소스와 함께 압축합니다. ZIP 자체는 ZIP 내부에 중복 포함하지 않습니다.
+체험 계정과 주행 기록은 합성 데이터이며 에뮬레이터에만 생성됩니다. `seed:local`은 기존 데이터를 지우지 않습니다. 기본 SSAFY 계정은 비밀번호 없이 익명 인증으로 진입합니다.
 
-최종 결과 문서는 명세서에서 허용한 Markdown 문서 형식으로 제공합니다. 개선된 요구사항과 실행 캡처가 포함되어 있으므로 별도 Word 또는 PowerPoint 파일은 필수 제출물이 아닙니다.
+Java가 PATH에 없다면 저장소의 비공개 `runtime.local.json`에 `{"javaHome":"JDK 또는 JRE 21 경로"}`를 설정하세요. `start:local`은 종료할 때 `work/emulator-data`에 데이터를 내보내고 다음 시작 시 읽습니다. 강제 종료 전에는 `npx firebase emulators:export work/emulator-data --project demo-drive-log --force`로 보관할 수 있습니다.
 
-## 실행 흐름
+## 실제 Firebase로 실행
 
-**PJT1 HOME → 하단 SETTING → 로그 DashBoard → 하단 HOME 복귀**
+`dist/config.js`를 `dist/config.local.js`로 복사하고 본인의 Firebase 웹 앱 설정을 입력한 다음 `npm start`를 실행합니다. 현재 작업 PC에서는 기존 프로젝트 `drive-log-pjt2-260911-7a90f`의 설정을 복구했습니다. 실제 설정 파일과 CLI 로그인 토큰은 Git 및 제출 ZIP에서 제외합니다.
 
-차량 배경과 태블릿 헤더·하단 메뉴를 공통으로 사용합니다. 로그 화면은 같은 주소의 `/logs/`에서 로드하며, HOME으로 이동했다 돌아와도 화면을 다시 생성하지 않아 필터와 정렬 상태를 유지합니다.
+Firebase Authentication에서 익명, 이메일/비밀번호, Google 로그인을 활성화하고 `localhost` 또는 배포 도메인을 허용해야 합니다. 현재 프로젝트에는 이 세 제공업체를 활성화했습니다. Firestore 인덱스·규칙, Storage 규칙, 서버 함수를 배포했습니다. Storage 기본 버킷은 `US-EAST1`입니다.
 
-이번 제출 범위는 PJT1 화면 연계와 Firebase 로그 기능입니다. 지도·길안내·날씨 화면과 기존 소스는 유지하지만 외부 API 초기화는 호출하지 않습니다. 지도·날씨 값은 기존 정적 화면이며 실시간 API 데이터가 아닙니다. 이 기능들의 API 키 없이 통합 앱을 실행할 수 있습니다.
-
-## 주요 기능
-
-| 기능 | 동작 |
-| --- | --- |
-| 실시간 DashBoard | 로그 수, 사용자 수, 주의·위험 이벤트, 데이터 확인 필요 건수 표시 |
-| 파일 업로드 | TXT/LOG 미리보기, 진행률, 실패 행 재시도, 저장 성공 시 창 자동 닫기 |
-| 자동 정제 | Firestore 문서 생성 시 Cloud Functions가 원문을 구조화된 로그로 변환 |
-| 복합 검색 | KST 날짜 범위, 로그 등급, 사용자 ID, 키워드 필터 조합 |
-| 열별 정렬 | 기록 시각·등급·사용자·메시지·속도·엔진 열을 기본 → 오름차순 → 내림차순 순서로 전환 |
-| 로그 상세 | 행 클릭으로 상세창 표시, 좌우 버튼·방향키로 이전/다음 로그 이동 |
-| 중복 방지 | 같은 로그가 포함된 파일을 재업로드해도 기존 문서를 재사용 |
-| 접근 제어 | 인증 사용자별 데이터 조회, 정제 데이터의 클라이언트 직접 수정 차단 |
-
-기본 정렬은 최신순입니다. 등급은 `DEBUG → INFO → WARNING → ERROR → CRITICAL` 순으로 정렬하며, 누락값은 정렬 방향과 관계없이 마지막에 표시합니다. 상세창은 열린 시점의 필터·정렬 결과를 기준으로 페이지 경계를 넘어 탐색합니다.
-
-## 기술 구성
-
-| 구분 | 사용 기술 |
-| --- | --- |
-| 프런트엔드 | HTML, CSS, JavaScript, Axios, 같은 출처의 iframe 화면 통합 |
-| 로컬 서버 | Node.js, Express, dotenv |
-| 인증 | Firebase Authentication 익명 로그인 |
-| 데이터베이스 | Cloud Firestore |
-| 서버 처리 | Cloud Functions for Firebase 2세대, Admin SDK |
-| 런타임 | 로컬 Node.js 22 이상, Functions Node.js 22 |
-| 검증 | Node.js 내장 테스트 러너, 정적 연결 검사 |
-
-```mermaid
-flowchart LR
-    A[TXT / LOG 업로드] --> B[raw_telematics_logs]
-    B --> C[Cloud Functions]
-    C --> D[telematics_logs]
-    D --> E[실시간 DashBoard]
-    C --> F[형식 오류 기록 및 원문 보존]
-```
-
-## 시작하기
-
-Node.js 22 이상과 연결할 Firebase 웹 앱 설정이 필요합니다.
-
-```bash
-git clone https://lab.ssafy.com/s16/a20/20260911-pjt-2/1644387-1645145.git
-cd 1644387-1645145
-npm ci
-```
-
-GitHub를 이용할 경우 아래 명령으로 같은 프로젝트를 받을 수 있습니다. ZIP을 받은 경우에는 압축을 푼 프로젝트 폴더에서 `npm ci`부터 실행합니다.
-
-```bash
-git clone https://github.com/DRIVE-LOG/DRIVE-LOG.git
-cd DRIVE-LOG
-npm ci
-```
-
-`dist/config.js`를 같은 폴더의 `config.local.js`로 복사한 뒤 Firebase Console에서 확인한 웹 앱 설정을 입력합니다.
-
-```js
-export const firebaseConfig = {
-  apiKey: 'YOUR_WEB_API_KEY',
-  authDomain: 'YOUR_PROJECT_ID.firebaseapp.com',
-  projectId: 'YOUR_PROJECT_ID',
-  appId: 'YOUR_WEB_APP_ID'
-};
-export const useEmulators = false;
-```
-
-```bash
-npm start
-```
-
-[로컬 인포테인먼트](http://127.0.0.1:4173/)를 열고 하단 **SETTING**을 누르면 설정된 Firebase 프로젝트에 자동 연결합니다. 로그 화면 직접 진입은 `http://127.0.0.1:4173/#settings`입니다. 새 프로젝트를 사용하는 경우 아래 백엔드 설정을 먼저 완료하세요.
-
-`config.local.js`와 `.firebaserc`는 저장소에 포함하지 않습니다. Firebase 웹 설정은 브라우저에서 사용하는 공개 식별 정보이며, 데이터 권한은 Authentication과 Firestore 규칙으로 통제합니다. 서비스 계정 개인 키는 프런트엔드에 넣지 않습니다.
-
-### Firebase 백엔드 설정
-
-1. Firebase 프로젝트와 웹 앱을 생성합니다.
-2. Firestore Standard 데이터베이스를 생성합니다. 이 프로젝트의 Functions 리전은 서울 `asia-northeast3`입니다.
-3. Authentication에서 익명 로그인을 활성화합니다.
-4. Cloud Functions를 사용할 수 있도록 Blaze 요금제와 배포 권한을 준비합니다.
-5. 서버 의존성을 설치하고 프로젝트를 선택한 뒤 배포합니다.
-
-```bash
-npm ci --prefix functions
+```powershell
 npx firebase login
 npx firebase use --add
-npx firebase deploy --only firestore,functions
+npx firebase deploy --only functions,firestore,storage
 ```
 
-복합 인덱스가 준비되면 DashBoard에서 로그를 업로드할 수 있습니다. 원문 저장과 자동 정제는 비동기로 진행되므로 저장 성공 후 처리된 로그부터 표시됩니다.
+최초 관리자는 먼저 앱에서 가입한 뒤 프로젝트 소유자가 다음 명령으로 지정합니다. 이후에는 관리자 전용 회원 관리 탭에서 승격합니다. 비밀번호나 서비스 계정 파일을 소스에 넣지 않습니다.
 
-### 로그 파일 형식
-
-한 행이 하나의 기록입니다. 다음은 형식을 설명하기 위한 작성 예시입니다.
-
-```text
-[2025-07-05 08:00:00 | driver_01 | INFO | Speed=42 km/h Accel=-1.5 m/s² Brake=OFF Dist=120 km EngTemp=85 °C FuelEff=14 km/L
-[2025-07-05 08:01:00 | driver_01 | WARNING | Event=Collision Impact=Low Speed=0 km/h Location=37.5,127.1
+```powershell
+npm run admin:grant -- --email 관리자이메일 --project Firebase프로젝트ID
 ```
 
-- 최대 5 MB, 10,000행, 행당 10,000자까지 처리합니다.
-- 원본 시각은 한국 시간으로 해석하고 Firestore에는 Timestamp로 저장합니다.
-- 음수 가속도, 문자 이벤트, 위도·경도를 보존합니다.
-- 누락된 측정값은 `null`로 저장하고 확인 필요 항목으로 표시합니다.
-- 형식 오류 행은 원문과 실패 사유를 저장하며 정제 목록에서는 제외합니다.
-- 원문 해시와 파일 내 반복 순번으로 중복을 판별합니다. 한 파일 안의 반복 행은 반복 횟수만큼 보존합니다.
+## GMS AI 설정
 
-기본 제공 명세서, PDF, ZIP, 예제 프로젝트 원본 묶음과 원본 데이터 파일은 이 저장소에 포함하지 않습니다. PJT1에서 연계에 사용하는 화면·서버 소스는 `infotainment/`에 포함합니다. 필요한 로그 파일은 직접 준비해 업로드하세요.
+AI 요청은 Firebase callable 함수에서 SSAFY GMS 프록시로 전달됩니다. 키는 브라우저에 노출하지 않습니다. **현재 GMS 키가 소실되어 실제 생성 응답은 검증하지 못했습니다.** 연결되지 않은 경우 오류를 표시하고 사용자 메시지는 보존하며 같은 요청 ID로 재시도할 수 있습니다.
 
-### 사용자와 데이터 범위
+- `functions/.env.example`를 로컬용 `functions/.env.local` 또는 운영용 `functions/.env.프로젝트ID`로 복사합니다.
+- GMS 포털의 실제 주소와 허용 모델을 확인해 `GMS_BASE_URL`, `GMS_MODEL`을 지정하고 `GMS_ENABLED=true`로 변경합니다. 예시 모델과 주소는 계정의 허용 목록을 확인해야 합니다.
+- 에뮬레이터 키: Git에서 제외된 `functions/.secret.local`에 `GMS_API_KEY=발급받은키`를 저장하고 에뮬레이터를 재시작합니다.
+- 운영 키: `npx firebase functions:secrets:set GMS_API_KEY`로 저장한 뒤 `npx firebase deploy --only functions:chat`을 실행합니다.
 
-`ownerUid`는 업로드한 Firebase 인증 사용자이고, `user`는 로그 안의 차량 사용자 ID입니다. 사용자 필터는 `user`를 기준으로 동작합니다.
+`GMS_ENABLED=false`가 기본값입니다. 테스트용 AI 응답은 테스트 파일의 주입된 어댑터에만 존재하며 제품 화면에서 가짜 응답을 생성하지 않습니다. 분석 범위는 현재 로그인 계정 소유의 최신 최대 5,000개 로그이고, 운전자 필터·누락값·임계치·대화 문맥을 함께 전달합니다.
 
-익명 계정은 같은 브라우저와 사이트에서 유지됩니다. 다른 브라우저·기기·도메인으로 접속하거나 사이트 데이터를 삭제하면 다른 계정이 생성되어 기존 계정의 로그가 보이지 않습니다. 새 계정에 로그가 자동으로 채워지지는 않습니다.
+## 지도·날씨 및 음성
 
-## 검증
+기존 내비게이션과 날씨 화면도 Vue로 옮겼습니다. 장소 검색, 최근 목적지, 경로·거리·예상 시간·안내, 현재 위치, 현재 날씨와 예보를 구현했습니다. 외부 API 키가 없으면 연결 안내를 표시합니다. 2026-10-15 기존 Kakao/OpenWeather 키를 복구했고, Chrome 지도 표시·강남역 검색·서울 시청 출발 경로·현재 날씨·예보 40개·보기 전환을 실응답으로 검증했습니다. 로컬 서버 2개와 배포 함수의 정상 응답·빈 좌표 거부·서버 키 비노출 검사 15개가 통과했습니다.
 
-```bash
-npm test
+이후 요청에 따라 홈·내비게이션 지도는 MapLibre GL JS와 OpenFreeMap의 실제 건물 높이를 사용하는 3D 지도로 바꿨습니다. 55° 기울기, 회전, 북쪽 정렬, 확대·축소, 2D/3D 전환을 지원합니다. 장소 검색과 경로 계산에는 기존 Kakao 키를 사용하며 경로선을 3D 지도에 표시합니다. 3D 그래픽을 사용할 수 없으면 카카오 2D 지도로 전환할 수 있습니다. 건물 형상·높이의 상세도는 OpenStreetMap 데이터가 제공하는 범위에 따릅니다. [지도 공급자 안내](https://openfreemap.org/quick_start/), [3D 건물 구현 방식](https://maplibre.org/maplibre-gl-js/docs/examples/display-buildings-in-3d/).
+
+날씨 화면은 원본 `infotainment/public`의 두 패널 배치, 날씨 아이콘, 상세 지표 4종, 드라이빙 인사이트, 습도·바람을 포함한 예보 카드, 오늘·내일 기온 범위를 복구했습니다. API는 40개 예보를 받으며 화면에는 원본처럼 3시간 간격 24개(72시간)를 표시합니다. 마우스 드래그·터치 스크롤·방향키 이동, 가로/세로 목록 전환, 화면 이동 시 보기 설정 유지, 10분 경과 후 자동 갱신, 홈 카드와 상단 날씨 동기화를 지원합니다. 복구 범위와 검증 기록은 [화면 복구 기록](docs/ui-restoration.md)을 참고하세요.
+
+로컬 서버에서는 `infotainment/.env.example`을 `infotainment/.env`로 복사해 Kakao JavaScript 키, Kakao Mobility REST 키, OpenWeather 키를 입력합니다. REST 키는 서버에서만 사용합니다. 현재 PC의 `.env`에는 복구한 키가 저장되어 있고 Firebase Secret Manager에도 서버 키 2개를 등록했습니다. Kakao 앱 `Infortainment System`의 기존 무료 쿼터를 사용하며, 기존 localhost:5500–5502 도메인을 유지하고 localhost와 127.0.0.1의 4173·4174 포트를 추가했습니다. 키 값은 Git과 제출 ZIP에서 제외합니다. 설정을 바꾼 후 서버를 재시작하세요.
+
+음성 입력은 Chrome Web Speech API와 마이크 권한을 사용하며, 응답 읽기는 SpeechSynthesis를 사용합니다. 미지원·권한 거부·무음 상태를 처리합니다. 이벤트 테스트를 통과했으며 실제 문장 인식과 음성 출력은 사용자가 정상 동작을 확인했습니다. GMS의 실제 생성 응답을 음성으로 읽는 전체 흐름은 키 복원 후 추가 확인이 필요합니다.
+
+## 구성
+
+| 경로 | 책임 |
+| --- | --- |
+| `web/src/views/` | 홈, 로그, 분석, 대화, 사용자 전환, 설정, 내비게이션, 날씨 |
+| `web/src/stores/` | 인증·프로필, 실시간 로그·필터, 대화 상태 |
+| `web/src/components/` | 차트, 로그 표·상세, 업로드, 관리자, 공통 모달 |
+| `functions/processor.js`, `functions/lib/parser.js` | 원문 생성 트리거, 검증·정제·중복 처리 |
+| `functions/api.js` | 회원 프로필, 중복 확인, 관리자 승격, AI 대화 |
+| `functions/lib/analytics.js`, `ai.js` | 누락값 보존, 통계·이상치, GMS 요청 |
+| `functions/lib/http-app.js` | 지도·날씨 프록시; 로컬 Express와 Cloud Functions에서 공유 |
+| `firestore.rules`, `storage.rules` | 계정별 기록 격리, 서버 전용 역할·대화 쓰기, 이미지 제한 |
+| `dist/`, `infotainment/public/` | 이전 화면 원본과 재사용 자산 |
+
+로그의 `user`는 운전자 ID이고 `ownerUid`는 로그인 계정입니다. 이 두 값은 별도로 관리합니다. 익명 계정도 자기 로그를 업로드할 수 있지만 챗봇·개인 설정은 사용할 수 없습니다. 관리자 권한은 Firestore의 서버 관리 프로필로 확인하며 클라이언트가 직접 변경할 수 없습니다.
+
+## 빌드와 검증
+
+```powershell
 npm run build
 npm run check
+npm test
+# 에뮬레이터 실행 중
+npm run test:emulator
+# 실제 프로젝트에 임시 검증 계정을 만들고 해당 데이터만 정리하는 명시적 검증
+node scripts/cloud-smoke.mjs --run
 ```
 
-- 자동 테스트 31개: 정제와 누락값 처리, KST 변환, 복합 필터, 3단계 정렬, 중복 방지, 업로드 동시성·실패 재시도, Functions 처리 흐름, 통합 경로와 PJT1 서버의 기존 동작을 검증합니다. PJT1 API 테스트는 모의 응답을 사용하며 실제 지도·날씨 서버에 접속하지 않습니다.
-- 테스트는 코드에 작성한 독립적인 입력값을 사용하므로 기본 제공 파일이나 Firebase 접속 없이 실행됩니다.
-- 정적 검사는 JavaScript 문법, HTML ID 연결, 리소스 경로, JSON 설정, 공통 모듈의 빌드 일치 여부를 확인합니다.
-- 실제 Firebase에서는 인증·접근 차단·자동 정제와 1,000건 조회를 확인했습니다. 브라우저에서 정렬, 상세 탐색, 업로드 성공 시 창 닫힘도 확인했습니다.
+2026-10-15 기준: 단위·HTTP 테스트 46개, Firebase 에뮬레이터 통합 시나리오 8개 통과. 실제 Firebase의 이메일 가입·중복 확인·로그 자동 정제·실시간 반영·이미지 저장·권한 차단·GMS 미설정 처리도 확인했습니다. Google 로그인은 Chrome 세션 유지, 회원 기능 접근, 서버의 google.com 제공업체·일반 회원 권한·프로필 저장까지 확인했습니다. 자세한 증거와 미검증 외부 조건은 [44개 요구사항 검증표](docs/requirements.md), [결과 보고서](submission/RESULTS.md)에 기록합니다.
 
-별도의 클라우드 통합 검사:
+선택적으로 Firebase Hosting을 사용할 수 있도록 `build/web` 자산과 `/api/** → webApi` 재작성 설정을 구성했습니다. `functions/.env.프로젝트ID`의 `WEB_FIREBASE_CONFIG`에는 웹 Firebase 설정 JSON을 넣습니다. 외부 API를 호스팅에서 사용할 경우 `EXTERNAL_APIS_ENABLED=true`와 공개 `KAKAO_MAP_JAVASCRIPT_KEY`를 지정하고, 두 REST 키는 Secret Manager에 같은 이름으로 저장하세요. `npm run build` 후 `npx firebase deploy --only functions:webApi,hosting`으로 공개 배포합니다. 이번 작업에서는 Hosting 공개 배포를 실행하지 않았습니다.
 
-```bash
-node scripts/firebase-smoke.mjs
-```
-
-이 명령은 설정된 Firebase 프로젝트에 테스트용 익명 계정 2개와 원시 문서 11개를 생성합니다. 기본 테스트에는 포함하지 않으며 실행 결과는 Git에서 제외된 `output/`에 저장합니다. 제공 데이터 파일은 필요하지 않습니다.
-
-## 실행 화면
-
-![PJT1 홈과 SETTING 진입](submission/screenshots/01_home_setting.png)
-
-![공통 태블릿 안의 실시간 DashBoard](submission/screenshots/02_setting_dashboard.png)
-
-필터·정렬·상세·업로드 화면은 [결과 문서](submission/RESULTS.md)에 수록했습니다.
-
-## 프로젝트 구조
-
-```text
-1644387-1645145/
-├─ infotainment/              # PJT1 소스와 SETTING 진입 화면
-│  ├─ public/                 # 차량 배경, 공통 헤더·HOME·SETTING 메뉴
-│  ├─ server.js               # 기존 Express 앱
-│  └─ test/                   # PJT1 서버 테스트
-├─ dist/
-│  ├─ index.html              # DashBoard 및 상세·업로드 창
-│  ├─ style.css               # 레이아웃과 등급·정렬 표시
-│  ├─ app.js                  # 화면 상태, 필터, 정렬, 상세 탐색
-│  ├─ services.js             # Firebase 인증·구독·업로드
-│  └─ config.js               # Firebase 설정 예시
-├─ functions/
-│  ├─ index.js                # 문서 생성 트리거
-│  ├─ processor.js            # 정제 및 처리 상태 트랜잭션
-│  └─ lib/                    # 공통 파서·조회·업로드 로직
-├─ scripts/                   # 빌드, 로컬 서버, 검사
-├─ tests/                     # 독립적인 자동 테스트
-├─ docs/                      # 구현 설계와 연동 검증 기록
-├─ submission/                # 결과 문서·실행 캡처·파일 목록
-├─ 임베디드_웹_관통PJT2_서울_20반_장문수_최현준.zip  # 제출 압축 파일
-├─ firebase.json              # 배포 및 에뮬레이터 설정
-├─ firestore.rules            # 사용자별 접근 규칙
-├─ firestore.indexes.json     # 실시간 조회 인덱스
-└─ .firebaserc.example        # 프로젝트 선택 설정 예시
-```
-
-`dist/`의 HTML·CSS·JS는 편집하는 소스입니다. `npm run build`는 공통 모듈과 Axios를 `dist/lib`, `dist/vendor`로 복사합니다. 이 두 폴더는 생성물이므로 Git에서 제외합니다.
-
-## 운영 및 제출물 재생성
-
-통합 화면은 `npm start`로 실행합니다. 포트를 바꿀 때는 `DRIVE_LOG_PORT` 환경변수를 사용합니다. 기본 주소는 `http://127.0.0.1:4173`입니다. `localhost` 또는 다른 포트로 바꾸면 Firebase 익명 인증 저장소의 출처가 달라져 기존 로그가 보이지 않을 수 있으므로 시연 시 같은 주소와 브라우저를 사용합니다.
-
-Firebase 배포는 앞서 안내한 Firestore 규칙·인덱스·Functions를 대상으로 합니다. 현재 `firebase.json`의 Hosting 설정은 독립 로그 화면용이며, 통합 인포테인먼트 공개 배포는 이번 제출 범위에 포함하지 않습니다.
-
-Functions의 장기 자동 재시도는 비활성화되어 있습니다. 서버 오류로 `pending`에 남은 문서는 Functions 로그를 확인한 후 복구해야 합니다. 조회는 사용자 소유 로그를 구독한 뒤 브라우저에서 필터·정렬하는 방식입니다.
-
-```bash
-npm run package:submission
-```
-
-패키징은 프로젝트 소스, 결과 문서, 실행 화면 캡처를 프로젝트 최상위의 지정 이름 ZIP으로 구성하고 `submission/FILES.md`를 실제 파일 목록으로 갱신합니다. ZIP 내부에는 각 파일의 SHA-256을 기록한 `MANIFEST.sha256`도 생성합니다. 압축 내부 README는 ZIP 자체를 가리키는 다운로드 링크만 파일명으로 바꾸며 나머지 안내는 저장소와 같습니다.
-
-`.git`, 의존성 설치 폴더, 원본 PDF·ZIP·데이터, 실제 Firebase 설정, `.env`, 개인 키, 임시 출력은 GitLab·GitHub·제출 ZIP에서 모두 제외합니다. Firebase의 실제 데이터베이스 내용도 Git에 내보내지 않습니다. 실행 캡처와 검증 집계만 결과 문서에 포함합니다. 새 환경은 개인 Firebase 설정과 업로드할 로그가 필요하며, 설정 후 위의 설치·실행 절차를 따르면 됩니다.
-
-자세한 내용은 [구현 설계](docs/requirements.md)와 [Firebase 연동 검증](docs/firebase-connection.md)을 참고하세요.
+제출 ZIP은 `npm run package:submission`으로 생성합니다. 지역·반·팀원 표기는 기존 저장소의 서울 20반 장문수·최현준 정보를 유지했습니다. 문서 명세서의 PJT5 파일명 규칙을 적용했으며, 키·로컬 설정·원본 제공 자료·node_modules를 제외하고 모든 파일의 SHA-256을 검증합니다. Git 커밋·원격 푸시·GitLab 제출은 수행하지 않았습니다.

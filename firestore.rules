@@ -3,6 +3,24 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function owns(data) { return signedIn() && data.ownerUid == request.auth.uid; }
+    function member() { return signedIn() && request.auth.token.firebase.sign_in_provider != 'anonymous' && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['user', 'admin']; }
+    function admin() { return member() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'; }
+    match /public_profiles/{uid} {
+      allow read: if signedIn();
+      allow write: if false;
+    }
+    match /users/{uid} {
+      allow read: if signedIn() && (request.auth.uid == uid || admin());
+      allow write: if false;
+      match /messages/{id} {
+        allow read: if member() && request.auth.uid == uid;
+        allow write: if false;
+      }
+      match /chat_requests/{id} {
+        allow read: if member() && request.auth.uid == uid;
+        allow write: if false;
+      }
+    }
     match /raw_telematics_logs/{id} {
       allow get: if signedIn() && (!exists(/databases/$(database)/documents/raw_telematics_logs/$(id)) || owns(resource.data));
       allow list: if owns(resource.data);

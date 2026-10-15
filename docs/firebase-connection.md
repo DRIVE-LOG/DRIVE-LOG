@@ -1,49 +1,24 @@
-# Firebase 연결 완료
+# Firebase 연결 검증 · 2026-10-15
 
-- Firestore: `(default)`, Standard, 서울 `asia-northeast3`
-- Authentication: 익명 로그인 활성화
-- Functions: `processRawLogs`, Node.js 22 / 2세대 / 서울, 상태 **ACTIVE**
-- 요금제: Blaze
-- 접근 규칙: 원시·정제 데이터 모두 `ownerUid` 기준으로 본인 데이터만 조회
-- 복합 인덱스: `ownerUid ASC + timestamp DESC` 배포 및 실제 쿼리 확인
-- 실제 프로젝트 선택과 웹 설정은 로컬 `.firebaserc`, `dist/config.local.js`에서 관리하며 Git에서 제외
+기존 DRIVE LOG PJT2 프로젝트의 웹 설정과 Firebase CLI 로그인을 Chrome에서 복구했습니다. 새 프로젝트를 만들지 않았으며 서비스 계정 개인 키를 생성하지 않았습니다.
 
-## 실제 검증 결과
+- 프로젝트: drive-log-pjt2-260911-7a90f
+- Functions: asia-northeast3, Node.js 22
+- Storage: drive-log-pjt2-260911-7a90f.firebasestorage.app, US-EAST1
+- 로그인 제공업체: 익명, 이메일/비밀번호, Google 활성화
+- Firestore: 계정 소유 로그 조회, 서버 전용 사용자/역할/대화 쓰기, 공개 프로필의 이메일 제외
+- Storage: 회원 본인 경로·5 MB 이하·JPG/PNG/WebP만 업로드
+- 배포 함수: processRawLogs, ensureProfile, checkEmail, saveProfile, promoteUser, chat, webApi
+- Hosting 공개 배포는 수행하지 않았습니다.
 
-2026-09-11에 `node scripts/firebase-smoke.mjs`로 클라우드 통합 검증을 수행했다.
+실제 클라우드 합성 계정으로 가입, 중복 이메일 확인, raw 문서 생성→자동 파싱→onSnapshot 반영, Storage 이미지 업로드, 프로필 변경, 일반 회원 승격 거부, 프로젝트 소유자 CLI를 통한 초기 관리자 지정, GMS 미설정 실패·사용자 메시지 보존, webApi 설정 응답을 확인했습니다. 검증이 끝난 임시 계정과 그 계정의 생성 데이터는 모두 삭제했습니다. 기존 사용자 데이터는 변경하지 않았습니다.
 
-| 검증 | 결과 |
-|---|---|
-| 익명 인증 | 성공 |
-| 원시 로그 저장 | 정상 10행 + 잘못된 헤더 1행 저장 |
-| Functions 트리거 | 정상 10행 자동 정제 |
-| 잘못된 헤더 | 원문 유지 + rejected + parseError |
-| 데이터 정제 | 음수 가속도, null 누락값, 위도·경도 보존 |
-| 실시간 조회용 복합 인덱스 쿼리 | 성공 |
-| 다른 사용자의 원시/정제 데이터 읽기 | 403 거절 |
-| 미인증 읽기 | 403 거절 |
-| 클라이언트의 정제 데이터 직접 수정 | 403 거절 |
+GMS_ENABLED=false 상태로 배포했습니다. 키 없는 AI 요청에는 명시적인 오류를 반환합니다. 실제 Google 로그인은 2026-10-15 10:06 KST에 완료되었고 10:08 KST에 서버에서 확인했습니다. Chrome에서 새로고침 후 프로필 세션 유지, 회원 설정·챗봇 접근, 관리자 탭 숨김을 확인했습니다. 서버에서도 google.com 제공업체, 활성 계정, user 권한, users/public_profiles 저장, 공개 프로필에 이메일이 없음을 확인했습니다.
 
-검증 결과는 로컬 `output/firebase-smoke-result.json`에 기록한다. 토큰은 파일이나 출력에 남기지 않는다. 검증용 계정/레코드는 실제 프로젝트에 남아 있으며 일반 앱 계정의 목록과 분리된다.
+배포 CLI는 모든 함수의 Successful create/update operation 후 Artifact Registry 정리 정책이 없다는 후속 경고로 종료 코드 1을 반환했습니다. 함수 생성 자체는 성공했으며 배포된 함수의 실제 호출까지 검증했습니다. 기존 컨테이너 이미지 정리 정책은 변경하지 않았습니다.
 
-## 앱 화면 검증
+인증 토큰, Firebase 로컬 웹 설정, functions/.env.프로젝트ID, .secret.local은 Git 및 제출 ZIP에 포함하지 않습니다. 설정과 재현 명령은 README를 참고하세요.
 
-로컬 앱에서 10행 업로드 후 전체 `vehicle-logs.txt`를 업로드했다. 기존 10행은 재사용하고 나머지 990행을 저장했으며, 새로고침 후 실제 Firebase 데이터 **1,000건**, 사용자 **5명**, WARNING **204건**, CRITICAL **89건**, 데이터 확인 필요 **151건**과 `실시간 연결됨` 상태를 확인했다. 샘플 모드 전환·프로젝트 ID·개발용 안내는 화면에서 제거했다.
+추가 점검에서 지도·날씨 빈 좌표가 0으로 변환되는 오류를 수정하고 webApi를 재배포했습니다. 키 복구 전에는 실제 배포 함수와 로컬 서버 2개에서 총 12개 오류 경로를 확인했습니다. 정상 좌표에 키가 없으면 503 API_KEY_MISSING, 빈 좌표면 400 INVALID_COORDINATES가 반환됩니다.
 
-## 동작 및 운영
-
-`npm start` 후 `http://127.0.0.1:4173`으로 접속하여 SETTING을 누르면 같은 출처의 /logs/ 화면에서 Firebase 프로젝트에 자동 연결한다. 새 브라우저/프로필은 새 익명 계정을 사용하므로 다른 브라우저의 로그는 보이지 않는다.
-
-Functions의 장기 자동 재시도 정책은 `retry: false`다. 앱 업로드 실패 재시도와 중복 문서 방지는 유지한다. 일시적 서버 오류로 정제되지 않은 pending 원문은 Functions 로그를 확인해 별도로 복구해야 한다.
-
-Artifact Registry 컨테이너 이미지의 자동 삭제 정책은 설정하지 않았다.
-
-프런트엔드는 로컬에서 실행하며 외부 Hosting 공개 배포는 하지 않았다.
-
-## DashBoard 동작 검증
-
-2026-09-11 브라우저에서 실제 1,000건으로 속도 오름차순·내림차순·기본 복귀, 정렬 중 날짜 범위 유지, 행 클릭 상세창, 첫 항목의 이전 버튼 비활성화, 20번째에서 21번째로 페이지 경계를 넘는 상세 이동을 확인했다. 기존 10행 파일 재업로드 후 창 자동 닫힘과 전체 1,000건 유지도 확인했다. 최종 통합본의 자동 테스트는 아래 PJT1 연계 검증을 포함해 31개다.
-
-## PJT1 연계 검증
-
-PJT1 공통 차량 배경·헤더·HOME 하단 바 안에서 SETTING으로 로그 화면을 표시한다. 지도·날씨 API는 초기화하지 않으며 기존 정적 화면만 유지한다. 실제 로그 1,000건과 필터·정렬·상세 탐색을 같은 출처에서 확인했다. 통합 서버와 기존 기능을 합쳐 자동 테스트 31개를 통과했다.
+2026-10-15 Kakao 앱 Infortainment System과 OpenWeather Car Information의 기존 활성 키를 복구했습니다. 로컬 infotainment/.env에 연결하고, 서버 키 KAKAO_MOBILITY_REST_API_KEY·OPENWEATHER_API_KEY를 Secret Manager에 등록했습니다. webApi에는 EXTERNAL_APIS_ENABLED=true와 공개 JavaScript 키를 적용해 재배포했습니다. 실제 로컬 서버 2개와 배포 함수에서 경로 및 현재 날씨·예보 40개, 공개 설정, 빈 좌표 거부를 검사해 15/15 통과했습니다. 응답에는 서버 키가 없으며, Chrome 지도·검색·길안내·날씨 화면도 확인했습니다. 실제 장치 위치 대신 서울 시청과 강남역의 공개 좌표를 사용했습니다. GMS_ENABLED=false는 유지하며 GMS 실생성 응답만 키 부족으로 미검증입니다.

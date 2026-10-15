@@ -35,10 +35,7 @@ test('health endpoint reports that the server is available', async () => {
 test('loads .env beside server.js regardless of the launch directory', () => {
   const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 
-  assert.equal(
-    environmentFilePath,
-    path.resolve(testDirectory, '..', '.env'),
-  );
+  assert.equal(environmentFilePath, path.resolve(testDirectory, '..', '.env'));
 });
 
 test('startup config accepts supported ports and requires all API keys', () => {
@@ -171,6 +168,52 @@ test('directions endpoint protects the REST key while proxying the route', async
   });
 });
 
+test('blank coordinate components are rejected before upstream calls while explicit zero is valid', async () => {
+  let calls = 0;
+  await withServer(
+    async (baseUrl) => {
+      const invalidPaths = [
+        '/api/directions?origin=,&destination=127,37',
+        '/api/directions?origin=%20,37&destination=127,37',
+        '/api/directions?origin=127,37&destination=127,',
+        '/api/directions?origin=127,37&destination=127,%20',
+        '/api/weather/forecast?lat=&lon=127',
+        '/api/weather/forecast?lat=%20&lon=127',
+        '/api/weather/forecast?lat=37&lon=',
+        '/api/weather/forecast?lat=37&lon=%20',
+      ];
+      for (const endpoint of invalidPaths) {
+        const response = await fetch(baseUrl + endpoint);
+        assert.equal(response.status, 400, endpoint);
+        assert.equal((await response.json()).error.code, 'INVALID_COORDINATES');
+      }
+      assert.equal(calls, 0);
+      assert.equal(
+        (await fetch(baseUrl + '/api/directions?origin=0,0&destination=0,0'))
+          .status,
+        200,
+      );
+      assert.equal(
+        (await fetch(baseUrl + '/api/weather/forecast?lat=0&lon=0')).status,
+        200,
+      );
+      assert.equal(calls, 3);
+    },
+    {
+      environment: {
+        KAKAO_MOBILITY_REST_API_KEY: 'test-only',
+        OPENWEATHER_API_KEY: 'test-only',
+      },
+      httpClient: {
+        async get() {
+          calls++;
+          return { data: {} };
+        },
+      },
+    },
+  );
+});
+
 test('weather endpoint validates coordinates and requires a server key', async () => {
   await withServer(
     async (baseUrl) => {
@@ -252,13 +295,10 @@ test('weather endpoint keeps the OpenWeather key on the server', async () => {
     },
   );
 
-  assert.deepEqual(
-    capturedRequests.map(({ url }) => url).sort(),
-    [
-      'https://api.openweathermap.org/data/2.5/forecast',
-      'https://api.openweathermap.org/data/2.5/weather',
-    ],
-  );
+  assert.deepEqual(capturedRequests.map(({ url }) => url).sort(), [
+    'https://api.openweathermap.org/data/2.5/forecast',
+    'https://api.openweathermap.org/data/2.5/weather',
+  ]);
   capturedRequests.forEach(({ config }) => {
     assert.deepEqual(config.params, {
       lat: 37.56,
@@ -298,17 +338,20 @@ test('serves the dashboard, media assets, and local Axios bundle', async () => {
     assert.doesNotMatch(dashboardHtml, /실시간 위치/);
 
     assert.equal(cockpitResponse.status, 200);
-    assert.match(cockpitResponse.headers.get('content-type') ?? '', /image\/png/);
+    assert.match(
+      cockpitResponse.headers.get('content-type') ?? '',
+      /image\/png/,
+    );
     assert.ok((await cockpitResponse.arrayBuffer()).byteLength > 100_000);
 
     assert.equal(albumResponse.status, 200);
-    assert.match(albumResponse.headers.get('content-type') ?? '', /image\/jpeg/);
+    assert.match(
+      albumResponse.headers.get('content-type') ?? '',
+      /image\/jpeg/,
+    );
     assert.ok((await albumResponse.arrayBuffer()).byteLength > 20_000);
 
     assert.equal(axiosResponse.status, 200);
-    assert.match(
-      axiosResponse.headers.get('content-type') ?? '',
-      /javascript/,
-    );
+    assert.match(axiosResponse.headers.get('content-type') ?? '', /javascript/);
   });
 });

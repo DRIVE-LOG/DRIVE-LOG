@@ -21,6 +21,13 @@ output/
 
 # Local Firebase selection and credentials
 .firebaserc
+.secret.local
+functions/.secret.local
+build/
+work/
+runtime.local.json
+playwright-report/
+test-results/
 *service-account*.json
 *serviceAccount*.json
 *.pem
