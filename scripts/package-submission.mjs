@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { zipSync, unzipSync } from 'fflate';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const name = '임베디드트랙_관통PJT09_서울_20반_장문수_최현준';
+const name = '임베디드트랙_관통PJT09_서울_20반_장문수';
 const outputIndex = process.argv.indexOf('--output');
 const destination =
   outputIndex >= 0

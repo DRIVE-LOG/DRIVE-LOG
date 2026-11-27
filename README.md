@@ -117,4 +117,4 @@ node scripts/cloud-smoke.mjs --run
 
 선택적으로 Firebase Hosting을 사용할 수 있도록 `dist` 자산과 `/api/** → webApi` 재작성 설정을 구성했습니다. `functions/.env.프로젝트ID`의 `WEB_FIREBASE_CONFIG`에는 웹 Firebase 설정 JSON을 넣습니다. 외부 API를 호스팅에서 사용할 경우 `EXTERNAL_APIS_ENABLED=true`와 공개 `KAKAO_MAP_JAVASCRIPT_KEY`를 지정하고, 두 REST 키는 Secret Manager에 같은 이름으로 저장하세요. `npm run build` 후 `npx firebase deploy --only functions:webApi,hosting`으로 공개 배포합니다. 이번 작업에서는 Hosting 공개 배포를 실행하지 않았습니다.
 
-제출 ZIP은 `npm run package:submission`으로 생성합니다. 지역·반·팀원 표기는 기존 저장소의 서울 20반 장문수·최현준 정보를 유지했습니다. 문서 명세서의 PJT5 파일명 규칙을 적용했으며, 키·로컬 설정·원본 제공 자료·node_modules를 제외하고 모든 파일의 SHA-256을 검증합니다. Git 커밋·원격 푸시·GitLab 제출은 수행하지 않았습니다.
+제출 ZIP은 `npm run package:submission`으로 생성합니다. PJT09 명세서의 파일명 규칙(`임베디드트랙_관통PJT09_지역_반_성명.zip`)에 따라 `임베디드트랙_관통PJT09_서울_20반_장문수.zip`으로 만들며, 키·로컬 설정·원본 제공 자료·node_modules를 제외하고 모든 파일의 SHA-256을 검증합니다.
