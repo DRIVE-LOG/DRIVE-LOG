@@ -1,6 +1,21 @@
-# DRIVE / LOG · PJT2–5
+# DRIVE / LOG · PJT2–9
 
 차량 로그 업로드부터 실시간 분석, 사용자 관리, AI 주행 대화까지 연결한 Vue 3 인포테인먼트 프로젝트입니다. 기존 차량 배경과 태블릿 UI를 유지하고 8개 화면을 Vue SFC, Vue Router, Pinia로 분리했습니다.
+
+
+## PJT09 리눅스 서버 배포
+
+PJT05 앱을 구조 변경 없이 **Local → Container → Cloud(AWS EC2)** 로 배포합니다. 전체 절차와 요구사항(F901~F910) 대응은 [PJT09 배포 가이드](docs/pjt09-deploy.md)를 참고하세요.
+
+```text
+브라우저 ──80──▶ [web: Nginx + dist] ──/api/*──▶ [api: Express(Node 22)] ──▶ Firebase · Kakao · OpenWeather
+```
+
+```powershell
+npm run build                                         # F902: dist 생성
+docker compose --env-file deploy/.env up -d --build   # F903·F909: 로컬 컨테이너 실행 → http://localhost
+.\deploy\push.ps1 -User <DockerHubID> -Tag v1.0.0     # F904: Docker Hub push
+```
 
 ## 실행
 
@@ -29,7 +44,7 @@ Java가 PATH에 없다면 저장소의 비공개 `runtime.local.json`에 `{"java
 
 ## 실제 Firebase로 실행
 
-`dist/config.js`를 `dist/config.local.js`로 복사하고 본인의 Firebase 웹 앱 설정을 입력한 다음 `npm start`를 실행합니다. 현재 작업 PC에서는 기존 프로젝트 `drive-log-pjt2-260911-7a90f`의 설정을 복구했습니다. 실제 설정 파일과 CLI 로그인 토큰은 Git 및 제출 ZIP에서 제외합니다.
+`legacy/config.js`를 `legacy/config.local.js`로 복사(또는 `FIREBASE_*` 환경 변수 지정)하고 본인의 Firebase 웹 앱 설정을 입력한 다음 `npm start`를 실행합니다. 현재 작업 PC에서는 기존 프로젝트 `drive-log-pjt2-260911-7a90f`의 설정을 복구했습니다. 실제 설정 파일과 CLI 로그인 토큰은 Git 및 제출 ZIP에서 제외합니다.
 
 Firebase Authentication에서 익명, 이메일/비밀번호, Google 로그인을 활성화하고 `localhost` 또는 배포 도메인을 허용해야 합니다. 현재 프로젝트에는 이 세 제공업체를 활성화했습니다. Firestore 인덱스·규칙, Storage 규칙, 서버 함수를 배포했습니다. Storage 기본 버킷은 `US-EAST1`입니다.
 
@@ -80,7 +95,9 @@ AI 요청은 Firebase callable 함수에서 SSAFY GMS 프록시로 전달됩니�
 | `functions/lib/analytics.js`, `ai.js` | 누락값 보존, 통계·이상치, GMS 요청 |
 | `functions/lib/http-app.js` | 지도·날씨 프록시; 로컬 Express와 Cloud Functions에서 공유 |
 | `firestore.rules`, `storage.rules` | 계정별 기록 격리, 서버 전용 역할·대화 쓰기, 이미지 제한 |
-| `dist/`, `infotainment/public/` | 이전 화면 원본과 재사용 자산 |
+| `legacy/`, `infotainment/public/` | 이전 화면 원본과 재사용 자산 |
+| `dist/` | `npm run build` 결과물(배포용 정적 파일, Git 제외) |
+| `Dockerfile`, `Dockerfile.api`, `docker-compose.yml`, `deploy/`, `.github/workflows/` | PJT09 컨테이너·클라우드 배포 |
 
 로그의 `user`는 운전자 ID이고 `ownerUid`는 로그인 계정입니다. 이 두 값은 별도로 관리합니다. 익명 계정도 자기 로그를 업로드할 수 있지만 챗봇·개인 설정은 사용할 수 없습니다. 관리자 권한은 Firestore의 서버 관리 프로필로 확인하며 클라이언트가 직접 변경할 수 없습니다.
 
@@ -98,6 +115,6 @@ node scripts/cloud-smoke.mjs --run
 
 2026-10-15 기준: 단위·HTTP 테스트 46개, Firebase 에뮬레이터 통합 시나리오 8개 통과. 실제 Firebase의 이메일 가입·중복 확인·로그 자동 정제·실시간 반영·이미지 저장·권한 차단·GMS 미설정 처리도 확인했습니다. Google 로그인은 Chrome 세션 유지, 회원 기능 접근, 서버의 google.com 제공업체·일반 회원 권한·프로필 저장까지 확인했습니다. 자세한 증거와 미검증 외부 조건은 [44개 요구사항 검증표](docs/requirements.md), [결과 보고서](submission/RESULTS.md)에 기록합니다.
 
-선택적으로 Firebase Hosting을 사용할 수 있도록 `build/web` 자산과 `/api/** → webApi` 재작성 설정을 구성했습니다. `functions/.env.프로젝트ID`의 `WEB_FIREBASE_CONFIG`에는 웹 Firebase 설정 JSON을 넣습니다. 외부 API를 호스팅에서 사용할 경우 `EXTERNAL_APIS_ENABLED=true`와 공개 `KAKAO_MAP_JAVASCRIPT_KEY`를 지정하고, 두 REST 키는 Secret Manager에 같은 이름으로 저장하세요. `npm run build` 후 `npx firebase deploy --only functions:webApi,hosting`으로 공개 배포합니다. 이번 작업에서는 Hosting 공개 배포를 실행하지 않았습니다.
+선택적으로 Firebase Hosting을 사용할 수 있도록 `dist` 자산과 `/api/** → webApi` 재작성 설정을 구성했습니다. `functions/.env.프로젝트ID`의 `WEB_FIREBASE_CONFIG`에는 웹 Firebase 설정 JSON을 넣습니다. 외부 API를 호스팅에서 사용할 경우 `EXTERNAL_APIS_ENABLED=true`와 공개 `KAKAO_MAP_JAVASCRIPT_KEY`를 지정하고, 두 REST 키는 Secret Manager에 같은 이름으로 저장하세요. `npm run build` 후 `npx firebase deploy --only functions:webApi,hosting`으로 공개 배포합니다. 이번 작업에서는 Hosting 공개 배포를 실행하지 않았습니다.
 
 제출 ZIP은 `npm run package:submission`으로 생성합니다. 지역·반·팀원 표기는 기존 저장소의 서울 20반 장문수·최현준 정보를 유지했습니다. 문서 명세서의 PJT5 파일명 규칙을 적용했으며, 키·로컬 설정·원본 제공 자료·node_modules를 제외하고 모든 파일의 SHA-256을 검증합니다. Git 커밋·원격 푸시·GitLab 제출은 수행하지 않았습니다.

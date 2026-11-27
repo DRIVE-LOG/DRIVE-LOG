@@ -21,12 +21,12 @@ export function createIntegratedApp(options) {
     express.static(path.join(root, 'infotainment/public/assets')),
   );
   app.get('/favicon.svg', (_request, response) =>
-    response.sendFile(path.join(root, 'dist/favicon.svg')),
+    response.sendFile(path.join(root, 'legacy/favicon.svg')),
   );
   app.use('/legacy', express.static(path.join(root, 'infotainment/public')));
   app.use(
     '/legacy/logs',
-    express.static(path.join(root, 'dist'), {
+    express.static(path.join(root, 'legacy'), {
       dotfiles: 'deny',
       index: 'index.html',
       setHeaders(response) {
@@ -39,7 +39,7 @@ export function createIntegratedApp(options) {
     response.redirect('/#/logs'),
   );
   app.use(
-    express.static(path.join(root, 'build/web'), {
+    express.static(path.join(root, 'dist'), {
       dotfiles: 'deny',
       setHeaders: (response) =>
         response.setHeader('X-Content-Type-Options', 'nosniff'),
@@ -52,8 +52,10 @@ if (
   path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   const port = Number(process.env.DRIVE_LOG_PORT || 4173);
-  const server = createIntegratedApp().listen(port, '127.0.0.1', () =>
-    console.log(`Integrated app: http://127.0.0.1:${port}`),
+  // 컨테이너에서는 DRIVE_LOG_HOST=0.0.0.0 으로 외부(Nginx) 접근을 허용합니다.
+  const host = process.env.DRIVE_LOG_HOST || '127.0.0.1';
+  const server = createIntegratedApp().listen(port, host, () =>
+    console.log(`Integrated app: http://${host}:${port}`),
   );
   server.on('error', (error) => {
     console.error(error.message);

@@ -1,0 +1,104 @@
+# F910: CI/CD 파이프라인
+#  push(main) → 검사·빌드 → Docker 이미지 build & Docker Hub push → (승인 후) EC2 배포
+#
+# 필요한 GitHub Secrets
+#   DOCKERHUB_USERNAME, DOCKERHUB_TOKEN   : Docker Hub 계정 / Access Token
+#   EC2_HOST, EC2_USER, EC2_SSH_KEY       : (선택) 자동 배포용 SSH 정보
+# EC2 배포 job 은 GitHub Environment "production" 에 Required reviewers 를 지정하면
+# 승인 버튼을 눌러야 진행되는 반자동 배포가 됩니다.
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+    paths-ignore: ['docs/**', 'submission/**', '**.md']
+  workflow_dispatch:
+
+concurrency:
+  group: cicd-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run build
+      - run: npm run check
+      - run: npm test
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    strategy:
+      matrix:
+        include:
+          - image: drive-log-web
+            dockerfile: Dockerfile
+          - image: drive-log-api
+            dockerfile: Dockerfile.api
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: tag
+        run: |
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=sha-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:${{ steps.tag.outputs.tag }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}:latest
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+
+  deploy:
+    needs: docker
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Check EC2 secrets
+        id: check
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+        run: |
+          if [ -z "$EC2_HOST" ]; then
+            echo "EC2_HOST 미설정: EC2 에서 'bash deploy.sh ${{ needs.docker.outputs.tag }}' 로 수동 배포하세요."
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy to EC2
+        if: steps.check.outputs.enabled == 'true'
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/drive-log
+            bash deploy.sh ${{ needs.docker.outputs.tag }}
+            bash monitor.sh | head -n 20

@@ -1,0 +1,25 @@
+===== 컨테이너 상태 =====
+NAME              IMAGE                             COMMAND                  SERVICE   CREATED         STATUS                        PORTS
+drive-log-api-1   heavenring/drive-log-api:v1.0.0   "docker-entrypoint.s…"   api       2 minutes ago   Up 2 minutes (healthy)        4173/tcp
+drive-log-web-1   heavenring/drive-log-web:v1.0.0   "/docker-entrypoint.…"   web       2 minutes ago   Up About a minute (healthy)   0.0.0.0:80->80/tcp, [::]:80->80/tcp
+
+===== 헬스체크 =====
+drive-log-api-1 : health=healthy restarts=0
+drive-log-web-1 : health=healthy restarts=0
+HTTP / : 200
+HTTP /api/health : 200
+
+===== 자원 사용량 =====
+NAME              CPU %     MEM USAGE / LIMIT     NET I/O
+drive-log-web-1   0.00%     3.656MiB / 908.6MiB   34.3kB / 2.45MB
+drive-log-api-1   0.01%     20.58MiB / 908.6MiB   4.19kB / 3kB
+
+===== 최근 로그 (각 20줄) =====
+api-1  | Integrated app: http://0.0.0.0:4173
+web-1  | <client-ip> - - [27/Nov/2026:01:22:39 +0000] "GET /assets/pinia-DWDLjAp9.js HTTP/1.1" 200 3037 "http://13.125.237.8/" "<user-agent>" "-"
+web-1  | <client-ip> - - [27/Nov/2026:01:22:39 +0000] "GET /assets/runtime-core.esm-bundler-CYy1veV7.js HTTP/1.1" 200 26829 "http://13.125.237.8/" "<user-agent>" "-"
+web-1  | <client-ip> - - [27/Nov/2026:01:22:39 +0000] "GET /assets/index-ImtqoBGD.js HTTP/1.1" 200 236135 "http://13.125.237.8/" "<user-agent>" "-"
+web-1  | <client-ip> - - [27/Nov/2026:01:22:39 +0000] "GET /assets/index-VOObl85i.css HTTP/1.1" 200 22173 "http://13.125.237.8/" "<user-agent>" "-"
+web-1  | <client-ip> - - [27/Nov/2026:01:22:39 +0000] "GET /api/app-config HTTP/1.1" 200 254 "http://13.125.237.8/" "<user-agent>" "-"
+web-1  | <client-ip> - - [27/Nov/2026:01:22:40 +0000] "GET /api/weather/forecast?lat=37.5665&lon=126.978 HTTP/1.1" 503 101 "http://13.125.237.8/" "<user-agent>" "-"
+web-1  | <client-ip> - - [27/Nov/2026:01:22:40 +0000] "GET /assets/HomeView-Cc2x9WHo.js HTTP/1.1" 200 2278 "http://13.125.237.8/" "<user-agent>" "-"

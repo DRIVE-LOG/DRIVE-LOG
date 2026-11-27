@@ -2,7 +2,7 @@
 // Tokens remain in memory. This command is deliberately separate from npm test.
 import assert from 'node:assert/strict';
 import { mkdir, writeFile } from 'node:fs/promises';
-import { firebaseConfig } from '../dist/config.local.js';
+import { firebaseConfig } from '../legacy/config.local.js';
 
 const project = firebaseConfig.projectId;
 const database = `projects/${project}/databases/(default)`;

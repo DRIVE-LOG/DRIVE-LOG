@@ -2,10 +2,11 @@ node_modules/
 functions/node_modules/
 .firebase/
 *-debug.log
-dist/lib/
-dist/data/
-dist/vendor/
-dist/config.local.js
+dist/
+legacy/lib/
+legacy/data/
+legacy/vendor/
+legacy/config.local.js
 .env
 .env.*
 !.env.example

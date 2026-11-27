@@ -5,3 +5,7 @@
 *.md text eol=lf
 *.html text eol=lf
 *.css text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+*.conf.template text eol=lf
+Dockerfile* text eol=lf

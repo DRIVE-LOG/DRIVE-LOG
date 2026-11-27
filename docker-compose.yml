@@ -1,0 +1,47 @@
+# DRIVE / LOG 배포 구성 (로컬·EC2 공통)
+#  - web : Nginx + Vue dist (외부 포트 80)
+#  - api : Express (Firebase 웹 설정, 날씨/길찾기 프록시) - 외부에 노출하지 않음
+#  - dozzle (선택) : 브라우저에서 컨테이너 로그 확인 (--profile monitoring)
+#
+# 이미지 태그는 deploy/.env 의 DOCKERHUB_USER, IMAGE_TAG 로 지정합니다.
+#   로컬 빌드 : docker compose --env-file deploy/.env up -d --build
+#   EC2 배포  : docker compose --env-file deploy/.env pull && docker compose --env-file deploy/.env up -d
+
+services:
+  api:
+    image: ${DOCKERHUB_USER:-local}/drive-log-api:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file:
+      - deploy/.env
+    restart: unless-stopped
+    expose:
+      - "4173"
+    logging: &default-logging
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    image: ${DOCKERHUB_USER:-local}/drive-log-web:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-80}:80"
+    restart: unless-stopped
+    logging: *default-logging
+
+  dozzle:
+    image: amir20/dozzle:v8.12.3
+    profiles: ["monitoring"]
+    ports:
+      - "${MONITOR_PORT:-9999}:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    restart: unless-stopped

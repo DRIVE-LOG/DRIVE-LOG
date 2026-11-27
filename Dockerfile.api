@@ -1,0 +1,31 @@
+# ------------------------------------------------------------
+# DRIVE / LOG API 이미지
+#  Firebase 웹 설정(/api/app-config), 날씨·길찾기·지도 키(/api/*)를
+#  서버에서만 다루기 위한 Node(Express) 컨테이너
+# ------------------------------------------------------------
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --ignore-scripts --no-audit --no-fund
+COPY . .
+RUN npm run build && npm prune --omit=dev
+
+FROM node:22-alpine AS api
+WORKDIR /app
+ENV NODE_ENV=production \
+    DRIVE_LOG_HOST=0.0.0.0 \
+    DRIVE_LOG_PORT=4173
+
+COPY --from=build /app/package.json ./
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/scripts ./scripts
+COPY --from=build /app/infotainment ./infotainment
+COPY --from=build /app/functions/lib ./functions/lib
+COPY --from=build /app/legacy ./legacy
+COPY --from=build /app/dist ./dist
+
+USER node
+EXPOSE 4173
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD wget -q -O /dev/null http://127.0.0.1:4173/api/health || exit 1
+CMD ["node", "scripts/serve.mjs"]

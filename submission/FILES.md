@@ -1,22 +1,29 @@
 # 제출 ZIP 파일 목록
 
-제출 파일: `임베디드_웹_관통PJT5_서울_20반_장문수_최현준.zip` (기본 위치는 프로젝트 최상위, --output으로 변경 가능)
+제출 파일: `임베디드트랙_관통PJT09_서울_20반_장문수_최현준.zip` (기본 위치는 프로젝트 최상위, --output으로 변경 가능)
 
-압축 최상위 폴더는 `임베디드_웹_관통PJT5_서울_20반_장문수_최현준/`이며, 아래 118개 파일과 자동 생성되는 `MANIFEST.sha256` 1개를 포함합니다. 이 목록은 `npm run package:submission`으로 실제 포함 경로에서 생성합니다.
+압축 최상위 폴더는 `임베디드트랙_관통PJT09_서울_20반_장문수_최현준/`이며, 아래 137개 파일과 자동 생성되는 `MANIFEST.sha256` 1개를 포함합니다. 이 목록은 `npm run package:submission`으로 실제 포함 경로에서 생성합니다.
 
 ## 포함 파일
 
+- `.dockerignore`
 - `.firebaserc.example`
 - `.gitattributes`
+- `.github/workflows/deploy.yml`
 - `.gitignore`
+- `Dockerfile`
+- `Dockerfile.api`
 - `README.md`
-- `dist/app.js`
-- `dist/config.js`
-- `dist/favicon.svg`
-- `dist/index.html`
-- `dist/services.js`
-- `dist/style.css`
+- `deploy/.env.example`
+- `deploy/deploy.sh`
+- `deploy/docker-compose.prod.yml`
+- `deploy/ec2-setup.sh`
+- `deploy/monitor.sh`
+- `deploy/nginx/default.conf.template`
+- `deploy/push.ps1`
+- `docker-compose.yml`
 - `docs/firebase-connection.md`
+- `docs/pjt09-deploy.md`
 - `docs/requirements.md`
 - `docs/ui-restoration.md`
 - `firebase.json`
@@ -44,6 +51,12 @@
 - `infotainment/public/styles.css`
 - `infotainment/server.js`
 - `infotainment/test/server.test.js`
+- `legacy/app.js`
+- `legacy/config.js`
+- `legacy/favicon.svg`
+- `legacy/index.html`
+- `legacy/services.js`
+- `legacy/style.css`
 - `package-lock.json`
 - `package.json`
 - `scripts/build.mjs`
@@ -82,6 +95,12 @@
 - `submission/screenshots/pjt5/weather-restored-mobile-forecast.png`
 - `submission/screenshots/pjt5/weather-restored-mobile.png`
 - `submission/screenshots/pjt5/weather-restored-vertical.png`
+- `submission/screenshots/pjt9/01_local_docker_nginx.jpg`
+- `submission/screenshots/pjt9/02_docker_ps.txt`
+- `submission/screenshots/pjt9/03_ec2_home.jpg`
+- `submission/screenshots/pjt9/04_ec2_logs.jpg`
+- `submission/screenshots/pjt9/05_ec2_analytics.jpg`
+- `submission/screenshots/pjt9/06_ec2_monitor.txt`
 - `tests/analytics-ai.test.mjs`
 - `tests/emulator/features.test.mjs`
 - `tests/integration.test.mjs`
@@ -132,7 +151,7 @@
 - 실제 Firebase 웹 설정(config.local.js), 프로젝트 선택(.firebaserc), .env 및 인증 토큰·개인 키
 - Firebase 데이터베이스 내보내기 파일
 - node_modules, .git, 임시 output, 디버그 로그
-- 빌드 시 생성되는 dist/lib와 dist/vendor (npm start 시 재생성)
+- 빌드 시 생성되는 dist/, legacy/lib, legacy/vendor (npm run build 시 재생성)
 - 제출 ZIP 자체 (재귀 압축 방지)
 
 실행에 필요한 Firebase 설정은 예시 파일을 복사해 별도로 입력합니다. 실행 방법은 루트 README.md를 참고하세요.

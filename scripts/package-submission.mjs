@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto';
 import { zipSync, unzipSync } from 'fflate';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const name = '임베디드_웹_관통PJT5_서울_20반_장문수_최현준';
+const name = '임베디드트랙_관통PJT09_서울_20반_장문수_최현준';
 const outputIndex = process.argv.indexOf('--output');
 const destination =
   outputIndex >= 0
@@ -23,6 +23,10 @@ const topFiles = [
   'firestore.indexes.json',
   'storage.rules',
   'vite.config.js',
+  'Dockerfile',
+  'Dockerfile.api',
+  'docker-compose.yml',
+  '.dockerignore',
 ];
 const files = [...topFiles];
 const excludedDirectories = new Set([
@@ -32,6 +36,7 @@ const excludedDirectories = new Set([
   'outputs',
   'work',
   'build',
+  'dist',
   'data',
   'log_upload',
 ]);
@@ -51,7 +56,7 @@ async function walk(relative) {
     if (item.isDirectory()) {
       if (
         !excludedDirectories.has(item.name) &&
-        !['dist/lib', 'dist/vendor'].includes(child)
+        !['legacy/lib', 'legacy/vendor'].includes(child)
       )
         await walk(child);
     } else if (item.isFile() && !/\.(?:zip|pdf|log)$/i.test(item.name))
@@ -60,12 +65,14 @@ async function walk(relative) {
 }
 for (const directory of [
   'web',
-  'dist',
+  'legacy',
   'infotainment',
   'functions',
   'scripts',
   'tests',
   'docs',
+  'deploy',
+  '.github',
   'submission/screenshots',
 ])
   await walk(directory);
@@ -92,7 +99,7 @@ const inventory = [
   '- 실제 Firebase 웹 설정(config.local.js), 프로젝트 선택(.firebaserc), .env 및 인증 토큰·개인 키',
   '- Firebase 데이터베이스 내보내기 파일',
   '- node_modules, .git, 임시 output, 디버그 로그',
-  '- 빌드 시 생성되는 dist/lib와 dist/vendor (npm start 시 재생성)',
+  '- 빌드 시 생성되는 dist/, legacy/lib, legacy/vendor (npm run build 시 재생성)',
   '- 제출 ZIP 자체 (재귀 압축 방지)',
   '',
   '실행에 필요한 Firebase 설정은 예시 파일을 복사해 별도로 입력합니다. 실행 방법은 루트 README.md를 참고하세요.',
